@@ -61,6 +61,14 @@
 @media (max-width: 768px) {
     .float-icn-1, .float-icn-2, .float-icn-3, .float-icn-4 {
         /* Adjust size and positioning for mobile devices */
+       font-size: 1rem;
+       position: absolute;
+       
+    }
+}
+@media (max-width: 768px) {
+    .float-icn-3, .float-icn-4 {
+        /* Adjust size and positioning for mobile devices */
        display: none;
     }
 }
