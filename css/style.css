@@ -1,0 +1,53 @@
+/* Initial transparent navbar style */
+.navbar-transparent {
+    background-color: transparent !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar-transparent .navbar-brand,
+.navbar-transparent .nav-link {
+    color: #000000; /* White text for transparent navbar */
+}
+
+/* Navbar style after scrolling */
+.navbar-scrolled {
+    background-color: #fff !important;
+}
+
+.navbar-scrolled .navbar-brand,
+.navbar-scrolled .nav-link {
+    color: #000; /* Black text for scrolled navbar */
+}
+/* Ensure the navbar-toggler icon is visible */
+.navbar-toggler-icon {
+    background-image: url("image/image/burger-menu-right-svgrepo-com.svg"); 
+    color: #000000;/* Default Bootstrap hamburger icon */
+}
+
+/* Override if needed */
+.navbar-toggler {
+    border: none;
+}
+/* Custom styles */
+
+.location {
+    display: flex;
+    align-items: center;
+    color: white; /* Ensures the text is white */
+    font-size: 16px; /* Adjust the font size if needed */
+    margin-right: 20px; /* Adds some spacing from the right */
+}
+
+/* Ensures the color doesn't get overridden by Bootstrap classes */
+#location {
+    color: white !important;
+}
+.gradient-section {
+background: linear-gradient(to bottom, #ffffff, #99b8ff); /* Gradient from top to bottom */
+height: 75vh; /* Full screen height */
+display: flex; /* Use flexbox to center content */
+justify-content: center; /* Horizontally center content */
+align-items: center; /* Vertically center content */
+color: rgb(0, 0, 0); /* Text color */
+text-align: center; /* Center-align text */
+}
