@@ -31,14 +31,39 @@
     --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0))
 }
 .py-80 { padding-top: 75px; padding-bottom: 75px; } 
-.float-icn-1 img,.float-icn-1 img,.float-icn-3 img{ width: 55px; } 
-.float-icn-1{ position: absolute; top: -55px; right: 0; animation: mover1 6s infinite alternate; } 
-@keyframes mover1 { 
-0% { transform: translateY(0); } 50% { transform: translateY(-20px); } 100% { transform: translateY(0px); }
-} 
-.float-icn-2{ position: absolute; top: -55px; left: 0; animation: mover2 15s infinite linear; } 
-.float-icn-3{ position: absolute; bottom: 55px; left: -60px; animation: mover1 6s infinite  alternate; } 
-.float-icn-4{ position: absolute; bottom: 5px; right: -60px; animation: mover4 10s infinite linear; } 
+
+
+.icon-container {
+    position: relative;
+    height: 200px; /* Adjust as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+.float-icn-1, .float-icn-2, .float-icn-3, .float-icn-4 {
+    position: absolute;
+    animation: shake 5s infinite;
+}
+.float-icn-1 { top: -55px; right: 0; }
+.float-icn-2 { top: -55px; left: 0; }
+.float-icn-3 { bottom: 55px; left: -60px }
+.float-icn-4 { bottom: 5px; right: -60px; }
+
+@keyframes shake {
+    0% { transform: translateX(-10px); }
+    25% { transform: translateX(10px); }
+    50% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+    100% { transform: translateX(-1px); }
+}
+
+@media (max-width: 768px) {
+    .float-icn-1, .float-icn-2, .float-icn-3, .float-icn-4 {
+        /* Adjust size and positioning for mobile devices */
+       display: none;
+    }
+}
 
 body {
     margin: 0;
@@ -124,7 +149,7 @@ h6,.h6 {
 p {
     margin-top: 0;
     margin-bottom: 1rem;
-    font-size:1.5rem
+    font-size:1.2rem var(--bs-font-monospace)
 }
 
 abbr[title],abbr[data-bs-original-title] {
