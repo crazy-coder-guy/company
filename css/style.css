@@ -19,7 +19,7 @@
 }
 .gradient-section {
 background: linear-gradient(to bottom, #99b8ff,#ffffff ); /* Gradient from top to bottom */
-height: 75vh; /* Full screen height */
+height: 60vh; /* Full screen height */
 display: flex; /* Use flexbox to center content */
 justify-content: center; /* Horizontally center content */
 align-items: center; /* Vertically center content */
