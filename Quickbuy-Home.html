@@ -306,7 +306,6 @@
 
 <!-- FontAwesome CDN for Icons -->
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
     import { getDatabase, ref, onValue, get, set } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-database.js";
@@ -332,18 +331,18 @@
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            showSpinner(); // Show spinner before fetching cart items
+            showSpinner();
             currentUserUid = user.uid;
             const userProfilePicUrl = user.photoURL || defaultProfilePicUrl;
             document.getElementById('profileImage').src = userProfilePicUrl;
             document.getElementById('profileLink').innerHTML = `<img src="${userProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
             fetchCartItems().then(() => {
-                hideSpinner(); // Hide spinner after fetching
+                hideSpinner();
                 const storedCity = localStorage.getItem('userCity');
                 if (storedCity) {
                     fetchProductsForCity(storedCity);
                 } else {
-                    showSpinner(); // Show spinner before getting user location
+                    showSpinner();
                     getUserLocation().then(location => {
                         hideSpinner();
                         getCityFromCoordinates(location.latitude, location.longitude).then(city => {
@@ -352,7 +351,7 @@
                             fetchProductsForCity(city);
                         });
                     }).catch(error => {
-                        hideSpinner(); // Ensure spinner is hidden on error
+                        hideSpinner();
                         console.error(error);
                     });
                 }
@@ -360,6 +359,13 @@
         } else {
             document.getElementById('profileImage').src = defaultProfilePicUrl;
             document.getElementById('profileLink').innerHTML = `<img src="${defaultProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
+        }
+    });
+
+    window.addEventListener('beforeunload', () => {
+        localStorage.removeItem('userCity'); // Remove user location from local storage
+        if (currentUserUid) {
+            set(ref(database, `users/${currentUserUid}/location`), null); // Remove location from Firebase
         }
     });
 
@@ -372,7 +378,7 @@
                         longitude: position.coords.longitude
                     });
                 }, () => {
-                    reject("Unable to retrieve your location.");
+                    reject("Unable to retrieve your location. Please enable location services.");
                 });
             } else {
                 reject("Geolocation is not supported by this browser.");
@@ -387,10 +393,10 @@
     }
 
     async function fetchProductsForCity(city) {
-        showSpinner(); // Show spinner when starting to fetch products
+        showSpinner();
         const productsRef = ref(database, 'products');
         onValue(productsRef, snapshot => {
-            hideSpinner(); // Hide spinner after fetching products
+            hideSpinner();
             const products = snapshot.val() || {};
             const filteredProducts = [];
 
@@ -435,18 +441,18 @@
     async function fetchCartItems() {
         const localCart = JSON.parse(localStorage.getItem(`cart_${currentUserUid}`)) || {};
         if (Object.keys(localCart).length > 0) {
-            cartItems = localCart; // Load cart items from local storage
+            cartItems = localCart;
             console.log("Loaded cart from local storage:", cartItems);
         } else {
             const cartRef = ref(database, `carts/${currentUserUid}`);
             const snapshot = await get(cartRef);
             if (snapshot.exists()) {
-                cartItems = snapshot.val(); // Load cart items into the cartItems object
+                cartItems = snapshot.val();
             } else {
-                cartItems = {}; // Initialize as empty if no items are found
+                cartItems = {};
             }
         }
-        storeCartInLocalStorage(cartItems); // Store in local storage for quick access
+        storeCartInLocalStorage(cartItems);
     }
 
     function storeCartInLocalStorage(cart) {
@@ -458,7 +464,7 @@
         const categoriesContainer = document.getElementById('productCategories');
         categoriesContainer.innerHTML = '';
 
-        const currentTime = new Date().getTime(); // Current time in milliseconds
+        const currentTime = new Date().getTime();
 
         for (const category in products) {
             const categoryDiv = document.createElement('div');
@@ -494,21 +500,21 @@
                 productBody.appendChild(productName);
 
                 const productLabel = document.createElement('span');
-                productLabel.className = 'new-info mb-2'; // Bootstrap badge for styling
-                productLabel.textContent = product.productType; // Get the product type label
+                productLabel.className = 'new-info mb-2';
+                productLabel.textContent = product.productType;
                 productBody.appendChild(productLabel);
 
-                const productTimestamp = new Date(product.timestamp).getTime(); // Convert timestamp to milliseconds
-                const fiveHoursInMillis = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
+                const productTimestamp = new Date(product.timestamp).getTime();
+                const fiveHoursInMillis = 5 * 60 * 60 * 1000;
 
                 const timeDiff = currentTime - productTimestamp;
                 if (timeDiff <= fiveHoursInMillis) {
                     const timeLabel = document.createElement('span');
-                    timeLabel.className = 'badge bg-warning mb-2'; // Bootstrap badge for styling
-                    timeLabel.textContent = 'Available for 5 hrs only'; // Availability message
+                    timeLabel.className = 'badge bg-warning mb-2';
+                    timeLabel.textContent = 'Available for 5 hrs only';
 
                     setTimeout(() => {
-                        timeLabel.remove(); // Remove the label after 5 hours
+                        timeLabel.remove();
                     }, fiveHoursInMillis - timeDiff);
                 }
 
@@ -605,7 +611,7 @@
 
     function filterProducts() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase() || 
-                          document.getElementById('searchInputDesktop').value.toLowerCase();
+                        document.getElementById('searchInputDesktop').value.toLowerCase();
         const filteredProducts = {};
 
         for (const category in allProducts) {
@@ -625,15 +631,15 @@
     document.getElementById('searchInputDesktop').addEventListener('input', filterProducts);
 
     function showSpinner() {
-    document.getElementById('spinner').style.display = 'flex'; // Ensure it's set to 'flex'
-}
+        document.getElementById('spinner').style.display = 'flex';
+    }
 
-function hideSpinner() {
-    document.getElementById('spinner').style.display = 'none';
-}
-
+    function hideSpinner() {
+        document.getElementById('spinner').style.display = 'none';
+    }
 
 </script>
+
 
 
 </body>
