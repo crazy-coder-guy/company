@@ -493,7 +493,7 @@
                 productCard.appendChild(productImage);
 
                 const productBody = document.createElement('div');
-                productBody.className = 'card-body text-center';
+                productBody.className = 'card-body text-start';  // Changed to text-start
 
                 const productName = document.createElement('h5');
                 productName.className = 'card-title';
@@ -506,7 +506,7 @@
                 productBody.appendChild(productLabel);
 
                 const priceContainer = document.createElement('div');
-                priceContainer.className = 'price-container mb-2';
+                priceContainer.className = 'price-container mb-1'; // Reduced margin
 
                 const originalPrice = document.createElement('p');
                 originalPrice.className = 'original-price';
@@ -521,7 +521,7 @@
                 productBody.appendChild(priceContainer);
 
                 const qtyInfo = document.createElement('p');
-                qtyInfo.className = 'qty-info';
+                qtyInfo.className = 'qty-info mb-2';  // Added margin for spacing
                 qtyInfo.textContent = `Available: ${product.quantity} ${product.qtyUnit}`; 
                 productBody.appendChild(qtyInfo);
 
@@ -549,7 +549,7 @@
                 productBody.appendChild(qtyContainer);
 
                 const addToCartButton = document.createElement('button');
-                addToCartButton.className = 'btn btn-primary w-100';
+                addToCartButton.className = 'btn btn-primary w-100 mt-2';  // Added margin top
 
                 if (cartItems[product.id]) {
                     addToCartButton.innerHTML = '<i class="fa fa-check"></i>';
@@ -624,7 +624,6 @@
         document.getElementById('spinner').style.display = 'none';
     }
 </script>
-
 
 </body>
 </html>
