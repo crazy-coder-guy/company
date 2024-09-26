@@ -379,7 +379,7 @@
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
                     });
-                }, () => {
+                }, (error) => {
                     alert("Please enable location services for this site.");
                     reject("Unable to retrieve your location.");
                 });
