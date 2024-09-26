@@ -38,7 +38,7 @@
         }
         .card-img-top {
             height: 150px;
-            object-fit: cover;
+            object-fit: contain;
             border-top-left-radius: 12px;
             border-top-right-radius: 12px;
             border-bottom: 2px solid rgba(0, 0, 0, 0.1);
@@ -179,9 +179,47 @@
     color: #007bff; /* Accent color */
     text-decoration: underline;
 }
-    </style>
+.spinner-container {
+    position: fixed; /* Fixed positioning */
+    top: 0; /* Align to the top */
+    left: 0; /* Align to the left */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    display: flex; /* Use flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    background-color: rgb(255, 255, 255); /* Optional: semi-transparent background */
+    z-index: 1000; /* Ensure it appears on top */
+    display: none; /* Initially hidden */
+}
+.loader {
+    width: 20px;
+    aspect-ratio: 1;
+    background: #25b09b;
+    box-shadow: 0 0 60px 15px #25b09b;
+    transform: translate(-80px);
+    clip-path: inset(0);
+    animation:
+        l4-1 0.5s ease-in-out infinite alternate,
+        l4-2 1s ease-in-out infinite;
+}
+
+@keyframes l4-1 {
+    100% { transform: translateX(80px); }
+}
+
+@keyframes l4-2 {
+    33% { clip-path: inset(0 0 0 -100px); }
+    50% { clip-path: inset(0 0 0 0); }
+    83% { clip-path: inset(0 -100px 0 0); }
+}
+
+
+</style>
 </head>
 <body>
+   
+    
 <!-- Mobile Navbar -->
 <nav class="navbar mobile-nav">
     <a class="navbar-brand" href="#">QuickBuy</a>
@@ -221,6 +259,9 @@
     <a href="#"><i class="fas fa-ellipsis-h"></i><br>More</a>
     <a href="cart.html"><i class="fas fa-shopping-cart fa-2"></i><br>Cart</a>
 </nav>
+<div id="spinner" class="spinner-container">
+    <div class="loader"></div>
+</div>
 
 <div class="container mt-5">
     <h2 class="text-center mb-4"></h2>
@@ -291,24 +332,29 @@
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
+            showSpinner(); // Show spinner before fetching cart items
             currentUserUid = user.uid;
             const userProfilePicUrl = user.photoURL || defaultProfilePicUrl;
             document.getElementById('profileImage').src = userProfilePicUrl;
             document.getElementById('profileLink').innerHTML = `<img src="${userProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
             fetchCartItems().then(() => {
-                // Check local storage for city
+                hideSpinner(); // Hide spinner after fetching
                 const storedCity = localStorage.getItem('userCity');
                 if (storedCity) {
                     fetchProductsForCity(storedCity);
                 } else {
+                    showSpinner(); // Show spinner before getting user location
                     getUserLocation().then(location => {
+                        hideSpinner();
                         getCityFromCoordinates(location.latitude, location.longitude).then(city => {
-                            // Store the city in local storage and Firebase
                             localStorage.setItem('userCity', city);
-                            set(ref(database, `users/${currentUserUid}/location`), { city }); // Store in Firebase
+                            set(ref(database, `users/${currentUserUid}/location`), { city });
                             fetchProductsForCity(city);
                         });
-                    }).catch(error => console.error(error));
+                    }).catch(error => {
+                        hideSpinner(); // Ensure spinner is hidden on error
+                        console.error(error);
+                    });
                 }
             });
         } else {
@@ -341,8 +387,10 @@
     }
 
     async function fetchProductsForCity(city) {
+        showSpinner(); // Show spinner when starting to fetch products
         const productsRef = ref(database, 'products');
         onValue(productsRef, snapshot => {
+            hideSpinner(); // Hide spinner after fetching products
             const products = snapshot.val() || {};
             const filteredProducts = [];
 
@@ -363,7 +411,6 @@
                         quantity: products[key].quantity,
                         stockAvailable: products[key].stockAvailable,
                         timestamp: products[key].timestamp,
-                        
                     };
                     filteredProducts.push(product);
                 }
@@ -408,135 +455,130 @@
     }
 
     function renderProducts(products) {
-    const categoriesContainer = document.getElementById('productCategories');
-    categoriesContainer.innerHTML = '';
+        const categoriesContainer = document.getElementById('productCategories');
+        categoriesContainer.innerHTML = '';
 
-    const currentTime = new Date().getTime(); // Current time in milliseconds
+        const currentTime = new Date().getTime(); // Current time in milliseconds
 
-    for (const category in products) {
-        const categoryDiv = document.createElement('div');
-        categoryDiv.className = 'col-12 mb-4';
+        for (const category in products) {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'col-12 mb-4';
 
-        const categoryTitle = document.createElement('h4');
-        categoryTitle.className = 'text-center mb-4';
-        categoryTitle.textContent = category;
-        categoryDiv.appendChild(categoryTitle);
+            const categoryTitle = document.createElement('h4');
+            categoryTitle.className = 'text-center mb-4';
+            categoryTitle.textContent = category;
+            categoryDiv.appendChild(categoryTitle);
 
-        const productRow = document.createElement('div');
-        productRow.className = 'overflow-auto d-flex gap-3';
+            const productRow = document.createElement('div');
+            productRow.className = 'overflow-auto d-flex gap-3';
 
-        products[category].forEach(product => {
-            const productCol = document.createElement('div');
-            productCol.className = 'col-auto';
+            products[category].forEach(product => {
+                const productCol = document.createElement('div');
+                productCol.className = 'col-auto';
 
-            const productCard = document.createElement('div');
-            productCard.className = 'card product-card';
-            productCard.style.width = '200px';
+                const productCard = document.createElement('div');
+                productCard.className = 'card product-card';
+                productCard.style.width = '200px';
 
-            const productImage = document.createElement('img');
-            productImage.src = product.imageURL;
-            productImage.className = 'card-img-top';
-            productCard.appendChild(productImage);
+                const productImage = document.createElement('img');
+                productImage.src = product.imageURL;
+                productImage.className = 'card-img-top';
+                productCard.appendChild(productImage);
 
-            const productBody = document.createElement('div');
-            productBody.className = 'card-body text-center';
+                const productBody = document.createElement('div');
+                productBody.className = 'card-body text-center';
 
-            const productName = document.createElement('h5');
-            productName.className = 'card-title';
-            productName.textContent = product.productName;
-            productBody.appendChild(productName);
+                const productName = document.createElement('h5');
+                productName.className = 'card-title';
+                productName.textContent = product.productName;
+                productBody.appendChild(productName);
 
-            // ** New Product Type Label Section **
-            const productLabel = document.createElement('span');
-            productLabel.className = 'new-info  mb-2'; // Bootstrap badge for styling
-            productLabel.textContent = product.productType; // Get the product type label
-            productBody.appendChild(productLabel);
+                const productLabel = document.createElement('span');
+                productLabel.className = 'new-info mb-2'; // Bootstrap badge for styling
+                productLabel.textContent = product.productType; // Get the product type label
+                productBody.appendChild(productLabel);
 
-            // ** Check Availability Time **
-            const productTimestamp = new Date(product.timestamp).getTime(); // Convert timestamp to milliseconds
-            const fiveHoursInMillis = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
+                const productTimestamp = new Date(product.timestamp).getTime(); // Convert timestamp to milliseconds
+                const fiveHoursInMillis = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
 
-            // Determine if the product is still available within 5 hours
-            const timeDiff = currentTime - productTimestamp;
-            if (timeDiff <= fiveHoursInMillis) {
-                const timeLabel = document.createElement('span');
-                timeLabel.className = 'badge bg-warning mb-2'; // Bootstrap badge for styling
-                timeLabel.textContent = 'Available for 5 hrs only'; // Availability message
+                const timeDiff = currentTime - productTimestamp;
+                if (timeDiff <= fiveHoursInMillis) {
+                    const timeLabel = document.createElement('span');
+                    timeLabel.className = 'badge bg-warning mb-2'; // Bootstrap badge for styling
+                    timeLabel.textContent = 'Available for 5 hrs only'; // Availability message
 
-                // Set a timeout to remove the label after 5 hours
-                setTimeout(() => {
-                    timeLabel.remove(); // Remove the label after 5 hours
-                }, fiveHoursInMillis - timeDiff);
-            }
+                    setTimeout(() => {
+                        timeLabel.remove(); // Remove the label after 5 hours
+                    }, fiveHoursInMillis - timeDiff);
+                }
 
-            const priceContainer = document.createElement('div');
-            priceContainer.className = 'price-container mb-2';
+                const priceContainer = document.createElement('div');
+                priceContainer.className = 'price-container mb-2';
 
-            const originalPrice = document.createElement('p');
-            originalPrice.className = 'original-price';
-            originalPrice.textContent = `MRP: ₹${product.originalPrice}`;
+                const originalPrice = document.createElement('p');
+                originalPrice.className = 'original-price';
+                originalPrice.textContent = `MRP: ₹${product.originalPrice}`;
 
-            const finalPrice = document.createElement('p');
-            finalPrice.className = 'final-price';
-            finalPrice.textContent = `Price: ₹${product.finalPrice}`;
+                const finalPrice = document.createElement('p');
+                finalPrice.className = 'final-price';
+                finalPrice.textContent = `Price: ₹${product.finalPrice}`;
 
-            priceContainer.appendChild(originalPrice);
-            priceContainer.appendChild(finalPrice);
-            productBody.appendChild(priceContainer);
+                priceContainer.appendChild(originalPrice);
+                priceContainer.appendChild(finalPrice);
+                productBody.appendChild(priceContainer);
 
-            const qtyInfo = document.createElement('p');
-            qtyInfo.className = 'qty-info';
-            qtyInfo.textContent = `Available: ${product.quantity} ${product.qtyUnit}`; 
-            productBody.appendChild(qtyInfo);
+                const qtyInfo = document.createElement('p');
+                qtyInfo.className = 'qty-info';
+                qtyInfo.textContent = `Available: ${product.quantity} ${product.qtyUnit}`; 
+                productBody.appendChild(qtyInfo);
 
-            const qtyContainer = document.createElement('div');
-            qtyContainer.className = 'd-flex align-items-center qty-container';
+                const qtyContainer = document.createElement('div');
+                qtyContainer.className = 'd-flex align-items-center qty-container';
 
-            const qtyLabel = document.createElement('span');
-            qtyLabel.textContent = 'QTY:';
-            qtyLabel.className = 'me-2';
+                const qtyLabel = document.createElement('span');
+                qtyLabel.textContent = 'QTY:';
+                qtyLabel.className = 'me-2';
 
-            const qtySelect = document.createElement('select');
-            qtySelect.className = 'form-select w-auto';
-            qtySelect.style.width = "80px";
+                const qtySelect = document.createElement('select');
+                qtySelect.className = 'form-select w-auto';
+                qtySelect.style.width = "80px";
 
-            const maxQty = Math.min(5, product.stockAvailable);
-            for (let i = 1; i <= maxQty; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = i;
-                qtySelect.appendChild(option);
-            }
+                const maxQty = Math.min(5, product.stockAvailable);
+                for (let i = 1; i <= maxQty; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = i;
+                    qtySelect.appendChild(option);
+                }
 
-            qtyContainer.appendChild(qtyLabel);
-            qtyContainer.appendChild(qtySelect);
-            productBody.appendChild(qtyContainer);
+                qtyContainer.appendChild(qtyLabel);
+                qtyContainer.appendChild(qtySelect);
+                productBody.appendChild(qtyContainer);
 
-            const addToCartButton = document.createElement('button');
-            addToCartButton.className = 'btn btn-primary w-100';
+                const addToCartButton = document.createElement('button');
+                addToCartButton.className = 'btn btn-primary w-100';
 
-            if (cartItems[product.id]) {
-                addToCartButton.innerHTML = '<i class="fa fa-check"></i>';
-                addToCartButton.disabled = true;
-            } else {
-                addToCartButton.textContent = 'Add to Cart';
-                addToCartButton.addEventListener('click', () => {
-                    const quantity = qtySelect.value;
-                    addToCart(product, quantity);
-                });
-            }
+                if (cartItems[product.id]) {
+                    addToCartButton.innerHTML = '<i class="fa fa-check"></i>';
+                    addToCartButton.disabled = true;
+                } else {
+                    addToCartButton.textContent = 'Add to Cart';
+                    addToCartButton.addEventListener('click', () => {
+                        const quantity = qtySelect.value;
+                        addToCart(product, quantity);
+                    });
+                }
 
-            productBody.appendChild(addToCartButton);
-            productCard.appendChild(productBody);
-            productCol.appendChild(productCard);
-            productRow.appendChild(productCol);
-        });
+                productBody.appendChild(addToCartButton);
+                productCard.appendChild(productBody);
+                productCol.appendChild(productCard);
+                productRow.appendChild(productCol);
+            });
 
-        categoryDiv.appendChild(productRow);
-        categoriesContainer.appendChild(categoryDiv);
+            categoryDiv.appendChild(productRow);
+            categoriesContainer.appendChild(categoryDiv);
+        }
     }
-}
-
 
     async function addToCart(product, quantity) {
         const cartRef = ref(database, `carts/${currentUserUid}/${product.id}`);
@@ -581,7 +623,18 @@
 
     document.getElementById('searchInput').addEventListener('input', filterProducts);
     document.getElementById('searchInputDesktop').addEventListener('input', filterProducts);
+
+    function showSpinner() {
+    document.getElementById('spinner').style.display = 'flex'; // Ensure it's set to 'flex'
+}
+
+function hideSpinner() {
+    document.getElementById('spinner').style.display = 'none';
+}
+
+
 </script>
+
 
 </body>
 </html>
