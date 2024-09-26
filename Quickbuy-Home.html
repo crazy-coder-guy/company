@@ -365,7 +365,9 @@
     window.addEventListener('beforeunload', () => {
         localStorage.removeItem('userCity'); // Remove user location from local storage
         if (currentUserUid) {
-            set(ref(database, `users/${currentUserUid}/location`), null); // Remove location from Firebase
+            set(ref(database, `users/${currentUserUid}/location`), null).catch(error => {
+                console.error("Error removing location from Firebase:", error);
+            }); // Remove location from Firebase
         }
     });
 
@@ -378,9 +380,11 @@
                         longitude: position.coords.longitude
                     });
                 }, () => {
-                    reject("Unable to retrieve your location. Please enable location services.");
+                    alert("Unable to retrieve your location. Please enable location services.");
+                    reject("Unable to retrieve your location.");
                 });
             } else {
+                alert("Geolocation is not supported by this browser.");
                 reject("Geolocation is not supported by this browser.");
             }
         });
@@ -639,8 +643,6 @@
     }
 
 </script>
-
-
 
 </body>
 </html>
