@@ -363,13 +363,23 @@
     });
 
     window.addEventListener('beforeunload', () => {
+        cleanupUserLocation();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            cleanupUserLocation();
+        }
+    });
+
+    function cleanupUserLocation() {
         localStorage.removeItem('userCity'); // Remove user location from local storage
         if (currentUserUid) {
             set(ref(database, `users/${currentUserUid}/location`), null).catch(error => {
                 console.error("Error removing location from Firebase:", error);
             }); // Remove location from Firebase
         }
-    });
+    }
 
     function getUserLocation() {
         return new Promise((resolve, reject) => {
@@ -643,6 +653,7 @@
     }
 
 </script>
+
 
 </body>
 </html>
