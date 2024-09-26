@@ -196,14 +196,14 @@
                 successAlert.textContent = "Login successful!";
                 successAlert.style.display = "block";
                 setTimeout(() => {
-                    window.location.href = "QuickBuy-Home.html";
+                    window.location.href = "Quickbuy-Home.html";
                 }, 2000);
             } else {
                 await createUserWithEmailAndPassword(auth, email, password);
                 successAlert.textContent = "Sign up successful! Redirecting...";
                 successAlert.style.display = "block";
                 setTimeout(() => {
-                    window.location.href = "QuickBuy-Home.html";
+                    window.location.href = "Quickbuy-Home.html";
                 }, 2000);
             }
         } catch (error) {
