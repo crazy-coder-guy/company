@@ -10,175 +10,215 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
     <title>QuickBuy - Products</title>
     <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: "Rubik", sans-serif;
-        }
-        .new-info {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: #000000;
-            color: white;
-            padding: 5px;
-            border-radius: 5px;
-            font-size: 12px;
-        }
-        .product-card {
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            position: relative;
-            margin-bottom: 15px;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        .card-img-top {
-            height: 150px;
-            object-fit: contain;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-        }
-        .new-label {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: #000000;
-            color: white;
-            padding: 5px;
-            border-radius: 5px;
-            font-size: 12px;
-        }
-        .category-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-            padding: 10px 0;
-        }
-        .card-body {
-            line-height: 1;
-            font-size: 0.875rem;
-        }
-        .qty-container {
-            margin-top: 0;
-        }
-        .price-container {
-            margin-bottom: 1px;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-            border-radius: 25px;
-            transition: background-color 0.3s;
-            padding: 10px 0;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        .overflow-auto {
-            overflow-x: hidden;
-            white-space: nowrap;
-        }
-        .price-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .original-price {
-            text-decoration: line-through;
-            color: red;
-            font-size: 0.875rem;
-            line-height: 1;
-        }
-        .final-price {
-            color: green;
-            font-weight: bold;
-            font-size: 0.875rem;
-            margin-left: 10px;
-            line-height: 1;
-        }
-        @media (max-width: 768px) {
-            .bottom-nav {
-                display: flex;
-                justify-content: space-around;
-                align-items: center;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                background-color: #fff;
-                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-                padding: 10px 0;
-            }
-            .bottom-nav a {
-                font-size: 18px;
-                color: #000;
-                text-align: center;
-                flex-grow: 1;
-                text-decoration: none;
-            }
-            .desktop-nav {
-                display: none;
-            }
-            .mobile-nav {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px;
-                background-color: #fff;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            }
-            .nav-search {
-                max-width: 60%;
-            }
-        }
-        @media (min-width: 769px) {
-            .bottom-nav {
-                display: none;
-            }
-            .desktop-nav {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px;
-                background-color: #fff;
-            }
-            .nav-search {
-                max-width: 500px;
-            }
-            .mobile-nav {
-                display: none;
-            }
-        }
-        .profile-img {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .desktop-nav, .mobile-nav {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background-color: #fff;
-        }
-        .bottom-nav {
-            z-index: 1000;
-        }
-        footer {
-        background-color: #000000;
-      
+       body {
+    background-color: #f8f9fa;
+    font-family: "Rubik", sans-serif;
+}
+
+.new-info {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #000000;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.product-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-img-top {
+    height: 150px;
+    object-fit: contain;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.new-label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #000000;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.category-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 10px 0;
+}
+
+.card-body {
+    line-height: 1.5; /* Adjusted for better spacing */
+    font-size: 0.875rem;
+}
+
+.qty-container {
+    margin-top: 10px; /* Added margin for separation */
+}
+
+.price-container {
+    margin-bottom: 5px; /* Adjusted for tighter spacing */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    line-height: 1.2; /* Reduced line height */
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    border-radius: 25px;
+    transition: background-color 0.3s;
+    padding: 10px 0;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.overflow-auto {
+    overflow-x: hidden;
+    white-space: nowrap;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: red;
+    font-size: 0.875rem;
+}
+
+.final-price {
+    color: green;
+    font-weight: bold;
+    font-size: 0.875rem;
+    margin-left: 10px;
+}
+
+.card-title {
+    font-size: 1rem; /* Smaller font size */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left; /* Align text to the left */
+}
+
+.qty-info {
+    text-align: left; /* Align to the left */
+    line-height: 1; /* Reduced line height */
+}
+
+/* Make the container relative for positioning the arrow */
+.qty-container {
+    position: relative; /* Relative positioning for arrow */
+}
+
+.qty-container {
+    margin-bottom: 10px; /* Added margin for gap */
+}
+
+@media (max-width: 768px) {
+    .bottom-nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        padding: 10px 0;
     }
-    a:hover {
+    .bottom-nav a {
+        font-size: 18px;
+        color: #000;
+        text-align: center;
+        flex-grow: 1;
+        text-decoration: none;
+    }
+    .desktop-nav {
+        display: none;
+    }
+    .mobile-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .nav-search {
+        max-width: 60%;
+    }
+}
+
+@media (min-width: 769px) {
+    .bottom-nav {
+        display: none;
+    }
+    .desktop-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: #fff;
+    }
+    .nav-search {
+        max-width: 500px;
+    }
+    .mobile-nav {
+        display: none;
+    }
+}
+
+.profile-img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.desktop-nav, .mobile-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #fff;
+}
+
+.bottom-nav {
+    z-index: 1000;
+}
+
+footer {
+    background-color: #000000;
+}
+
+a:hover {
     color: #007bff; /* Accent color */
     text-decoration: underline;
 }
+
 .spinner-container {
     position: fixed; /* Fixed positioning */
     top: 0; /* Align to the top */
@@ -192,6 +232,7 @@
     z-index: 1000; /* Ensure it appears on top */
     display: none; /* Initially hidden */
 }
+
 .loader {
     width: 20px;
     aspect-ratio: 1;
@@ -213,7 +254,6 @@
     50% { clip-path: inset(0 0 0 0); }
     83% { clip-path: inset(0 -100px 0 0); }
 }
-
 
 </style>
 </head>
@@ -347,7 +387,7 @@
                     getUserLocation().then(location => {
                         hideSpinner();
                         const locationData = {
-                            name: "Unknown Location", // You might fetch this if needed
+                            name: "Unknown Location",
                             latitude: location.latitude,
                             longitude: location.longitude
                         };
@@ -403,13 +443,11 @@
             const filteredProducts = [];
 
             for (const key in products) {
-                // Check if product's coordinates are within a reasonable range (e.g., within 10 km)
                 const productLat = products[key].latitude; // Assume your products have latitude
                 const productLon = products[key].longitude; // Assume your products have longitude
 
-                // Use a simple distance formula (Haversine or similar) for checking proximity
                 const distance = calculateDistance(latitude, longitude, productLat, productLon);
-                if (distance <= 10) { // distance in kilometers
+                if (distance <= 5) { // Change to 5 km
                     const product = {
                         id: key,
                         ...products[key]
@@ -424,14 +462,14 @@
     }
 
     function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371; // Radius of the Earth in km
+        const R = 6371; 
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLon = (lon2 - lon1) * Math.PI / 180;
         const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                   Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                   Math.sin(dLon / 2) * Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // Distance in km
+        return R * c; 
     }
 
     function groupProductsByCategory(products) {
@@ -625,7 +663,6 @@
     function hideSpinner() {
         document.getElementById('spinner').style.display = 'none';
     }
-
 </script>
 </body>
 </html>
