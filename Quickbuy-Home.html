@@ -387,60 +387,38 @@ a:hover {
     const defaultProfilePicUrl = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
 
     onAuthStateChanged(auth, (user) => {
-    if (user) {
-        showSpinner();
-        currentUserUid = user.uid;
-        const userProfilePicUrl = user.photoURL || defaultProfilePicUrl;
-        
-        // Update profile image
-        document.getElementById('profileImage').src = userProfilePicUrl;
-        document.getElementById('profileLink').innerHTML = `<img src="${userProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
-
-        fetchCartItems().then(() => {
-            hideSpinner();
-            const storedCity = localStorage.getItem('userCity');
-            const storedLocation = JSON.parse(localStorage.getItem('userLocation'));
-            const currentTime = Date.now();
-
-            // Check if location is in local storage and not older than 1 hour
-            if (storedLocation && (currentTime - storedLocation.timestamp < 3600000)) {
-                const { city, latitude, longitude } = storedLocation;
-                fetchProductsForCity(city);
-            } else {
-                showSpinner();
-                getUserLocation().then(location => {
-                    hideSpinner();
-                    const { latitude, longitude } = location;
-
-                    // Get city from coordinates
-                    getCityFromCoordinates(latitude, longitude).then(city => {
-                        localStorage.setItem('userCity', city);
-                        
-                        // Store latitude, longitude, and timestamp in local storage
-                        const locationData = {
-                            city,
-                            latitude,
-                            longitude,
-                            timestamp: currentTime
-                        };
-                        localStorage.setItem('userLocation', JSON.stringify(locationData));
-                        
-                        set(ref(database, `users/${currentUserUid}/location`), { city, latitude, longitude });
-                        fetchProductsForLocation(latitude, longitude);
+        if (user) {
+            showSpinner();
+            currentUserUid = user.uid;
+            const userProfilePicUrl = user.photoURL || defaultProfilePicUrl;
+            document.getElementById('profileImage').src = userProfilePicUrl;
+            document.getElementById('profileLink').innerHTML = `<img src="${userProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
+            fetchCartItems().then(() => {
+                hideSpinner();
+                const storedCity = localStorage.getItem('userCity');
+                if (storedCity) {
+                    fetchProductsForCity(storedCity);
+                } else {
+                    showSpinner();
+                    getUserLocation().then(location => {
+                        hideSpinner();
+                        const { latitude, longitude } = location;
+                        getCityFromCoordinates(latitude, longitude).then(city => {
+                            localStorage.setItem('userCity', city);
+                            set(ref(database, `users/${currentUserUid}/location`), { city, latitude, longitude });
+                            fetchProductsForLocation(latitude, longitude);
+                        });
+                    }).catch(error => {
+                        hideSpinner();
+                        console.error(error);
                     });
-                }).catch(error => {
-                    hideSpinner();
-                    console.error(error);
-                });
-            }
-        });
-    } else {
-        // Reset profile image to default if not logged in
-        document.getElementById('profileImage').src = defaultProfilePicUrl;
-        document.getElementById('profileLink').innerHTML = `<img src="${defaultProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
-    }
-});
-
+                }
+            });
+        } else {
+            document.getElementById('profileImage').src = defaultProfilePicUrl;
+            document.getElementById('profileLink').innerHTML = `<img src="${defaultProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
+        }
+    });
 
     window.addEventListener('beforeunload', () => {
         localStorage.removeItem('userCity'); // Remove user location from local storage
