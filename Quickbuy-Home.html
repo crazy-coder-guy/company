@@ -25,6 +25,7 @@
     border: none; /* Changed from groove to none */
     font-size: 15px;
     text-align: left; /* Align text to the left */
+    border-top-left-radius: 12px;
 }
 
 
@@ -44,7 +45,7 @@
 
 .card-img-top {
     height: 150px;
-    object-fit: fill;
+    object-fit: cover;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     border-bottom: 2px solid rgba(0, 0, 0, 0.1);
@@ -200,9 +201,21 @@ a:hover {
     color: #007bff; /* Accent color */
     text-decoration: underline;
 }
-.qty-container button {
+.qty-container {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    margin-bottom: 5px;
+
+}
+
+.qty-display {
+    margin: 0 10px; /* Add margin for spacing */
+    text-align: center; /* Center the text within the span */
+}
+
+.btn {
     width: 30px; /* Fixed width for buttons */
-    margin: 0 5px; /* Margin between buttons */
+    margin: 0; /* No margin between buttons */
 }
 
 .spinner-container {
@@ -598,59 +611,64 @@ a:hover {
             qtyInfo.textContent = `${product.quantity} ${product.qtyUnit}`; 
             productBody.appendChild(qtyInfo);
 
-            // Quantity buttons
-            const qtyContainer = document.createElement('div');
-            qtyContainer.className = 'd-flex align-items-center qty-container mt-2';
+           // Quantity buttons
+const qtyContainer = document.createElement('div');
+qtyContainer.className = 'd-flex align-items-center qty-container mt-2';
 
-            const qtyLabel = document.createElement('span');
-            qtyLabel.textContent = 'QTY:';
-            qtyLabel.className = 'me-2';
+const qtyLabel = document.createElement('span');
+qtyLabel.textContent = 'QTY:';
+qtyLabel.className = 'me-2';
 
-            const qtyDisplay = document.createElement('span');
-            qtyDisplay.textContent = '1'; // Start with 1 by default
-            qtyDisplay.className = 'qty-display me-2';
+const minusButton = document.createElement('button');
+minusButton.textContent = '-';
+minusButton.className = 'btn btn-secondary btn-sm';
+minusButton.onclick = () => {
+    let currentQty = parseInt(qtyDisplay.textContent);
+    if (currentQty > 1) { // Prevent going below 1
+        currentQty--;
+        qtyDisplay.textContent = currentQty;
+    }
+};
 
-            const minusButton = document.createElement('button');
-            minusButton.textContent = '-';
-            minusButton.className = 'btn btn-secondary btn-sm';
-            minusButton.onclick = () => {
-                let currentQty = parseInt(qtyDisplay.textContent);
-                if (currentQty > 1) { // Prevent going below 1
-                    currentQty--;
-                    qtyDisplay.textContent = currentQty;
-                }
-            };
+const qtyDisplay = document.createElement('span');
+qtyDisplay.textContent = '1'; // Start with 1 by default
+qtyDisplay.className = 'qty-display me-2';
 
-            const plusButton = document.createElement('button');
-            plusButton.textContent = '+';
-            plusButton.className = 'btn btn-secondary btn-sm';
-            plusButton.onclick = () => {
-                let currentQty = parseInt(qtyDisplay.textContent);
-                const maxQty = Math.min(5, product.stockAvailable); // Limit to available stock or 5
-                if (currentQty < maxQty) {
-                    currentQty++;
-                    qtyDisplay.textContent = currentQty;
-                }
-            };
+const plusButton = document.createElement('button');
+plusButton.textContent = '+';
+plusButton.className = 'btn btn-secondary btn-sm';
+plusButton.onclick = () => {
+    let currentQty = parseInt(qtyDisplay.textContent);
+    const maxQty = Math.min(5, product.stockAvailable); // Limit to available stock or 5
+    if (currentQty < maxQty) {
+        currentQty++;
+        qtyDisplay.textContent = currentQty;
+    }
+};
 
-            qtyContainer.appendChild(qtyLabel);
-            qtyContainer.appendChild(qtyDisplay);
-            qtyContainer.appendChild(minusButton);
-            qtyContainer.appendChild(plusButton);
-            productBody.appendChild(qtyContainer);
+// Append elements in the desired order
+qtyContainer.appendChild(qtyLabel); // Label on the left
+qtyContainer.appendChild(minusButton); // Minus button next to the label
+qtyContainer.appendChild(qtyDisplay); // Quantity text in the middle
+qtyContainer.appendChild(plusButton); // Plus button on the right
+productBody.appendChild(qtyContainer);
 
-            const addToCartButton = document.createElement('button');
-            addToCartButton.className = 'btn btn-primary w-100';
-            addToCartButton.innerHTML = 'Put in Cart <i class="fa-solid fa-cart-shopping"></i>'; // Default state
+const addToCartButton = document.createElement('button');
+addToCartButton.className = 'btn btn-primary w-100';
+addToCartButton.innerHTML = 'Put in Cart <i class="fa-solid fa-cart-shopping"></i>'; // Default state
 
-            addToCartButton.addEventListener('click', () => {
-                const quantity = qtyDisplay.textContent; // Assuming qtyDisplay exists
-                if (parseInt(quantity) > 0) {
-                    addToCart(product, quantity);
-                    addToCartButton.innerHTML = '<i class="fa fa-spinner" aria-hidden="true"></i>';
-                    addToCartButton.disabled = true; // Disable after adding
-                }
-            });
+addToCartButton.addEventListener('click', () => {
+    const quantity = qtyDisplay.textContent; // Assuming qtyDisplay exists
+    if (parseInt(quantity) > 0) {
+        addToCart(product, quantity);
+        addToCartButton.innerHTML = '<i class="fa fa-spinner" aria-hidden="true"></i>';
+        addToCartButton.disabled = true; // Disable after adding
+    }
+});
+
+// Append the Add to Cart button to the product body
+productBody.appendChild(addToCartButton);
+
 
             // Check if item is already in the cart
             if (cartItems[product.id]) {
