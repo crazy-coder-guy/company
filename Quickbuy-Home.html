@@ -74,7 +74,7 @@
 }
 
 .btn-primary {
-    background-color: #007bff;
+    background-color: #347928;
     border: none;
     border-radius: 25px;
     transition: background-color 0.3s, transform 0.3s; /* Added transform for hover effect */
@@ -83,8 +83,9 @@
 }
 
 .btn-primary:hover {
-    background-color: #0056b3;
+    background-color: #c0eba4;
     transform: translateX(5px); /* Hover effect: move right */
+    color: black;
 }
 
 .overflow-auto {
@@ -640,23 +641,23 @@ a:hover {
 
             const addToCartButton = document.createElement('button');
             addToCartButton.className = 'btn btn-primary w-100';
-            addToCartButton.innerHTML = 'Add to Cart <i class="fa-solid fa-basket-shopping"></i> ';
+            addToCartButton.innerHTML = 'Put in Cart <i class="fa-solid fa-cart-shopping"></i>'; // Default state
+
             addToCartButton.addEventListener('click', () => {
-                const quantity = qtyDisplay.textContent;
+                const quantity = qtyDisplay.textContent; // Assuming qtyDisplay exists
                 if (parseInt(quantity) > 0) {
                     addToCart(product, quantity);
+                    addToCartButton.innerHTML = '<i class="fa fa-spinner" aria-hidden="true"></i>';
+                    addToCartButton.disabled = true; // Disable after adding
                 }
             });
+
+            // Check if item is already in the cart
             if (cartItems[product.id]) {
-                    addToCartButton.innerHTML = '<i class="fa fa-check"></i>';
-                    addToCartButton.disabled = true;
-                } else {
-                    addToCartButton.textContent = 'Add to Cart';
-                    addToCartButton.addEventListener('click', () => {
-                        const quantity = qtySelect.value;
-                        addToCart(product, quantity);
-                    });
-                }
+                addToCartButton.innerHTML = '<i class="fa-solid fa-basket-shopping fa-bounce"></i> Already in Cart';
+                addToCartButton.disabled = true; // Disable if already added
+            }
+
             productBody.appendChild(addToCartButton);
             productCard.appendChild(productBody);
             productCol.appendChild(productCard);
@@ -668,28 +669,28 @@ a:hover {
     }
 }
 
-    async function addToCart(product, quantity) {
-        const cartRef = ref(database, `carts/${currentUserUid}/${product.id}`);
-        const cartItem = {
-            productName: product.productName,
-            finalPrice: product.finalPrice,
-            quantity: parseInt(quantity),
-            totalPrice: (product.finalPrice * quantity).toFixed(2),
-            imageURL: product.imageURL,
-            productType: product.productType,
-            originalPrice: product.originalPrice,
-            qtyUnit: product.qtyUnit,
-            availableQuantity: product.quantity
-        };
+async function addToCart(product, quantity) {
+    const cartRef = ref(database, `carts/${currentUserUid}/${product.id}`);
+    const cartItem = {
+        productName: product.productName,
+        finalPrice: product.finalPrice,
+        quantity: parseInt(quantity),
+        totalPrice: (product.finalPrice * quantity).toFixed(2),
+        imageURL: product.imageURL,
+        productType: product.productType,
+        originalPrice: product.originalPrice,
+        qtyUnit: product.qtyUnit,
+        availableQuantity: product.quantity
+    };
 
-        await set(cartRef, cartItem);
-        console.log('Product added to cart:', cartItem);
-        alert(`${product.productName} added to cart!`);
+    await set(cartRef, cartItem);
+    console.log('Product added to cart:', cartItem);
+    // alert(`${product.productName} added to cart!`); // Removed the alert message
 
-        cartItems[product.id] = cartItem; 
-        storeCartInLocalStorage(cartItems); 
-        renderProducts(allProducts); 
-    }
+    cartItems[product.id] = cartItem; 
+    storeCartInLocalStorage(cartItems); 
+    renderProducts(allProducts); 
+}
 
     function filterProducts() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase() || 
