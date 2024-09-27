@@ -14,17 +14,19 @@
     background-color: #f8f9fa;
     font-family: "Rubik", sans-serif;
 }
-
 .new-info {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 0px;
+    left: 0px;
     background-color: #000000;
     color: white;
     padding: 5px;
-    border-radius: 5px;
-    font-size: 12px;
+    border-radius: 2px; /* Unified border-radius property */
+    border: none; /* Changed from groove to none */
+    font-size: 15px;
+    text-align: left; /* Align text to the left */
 }
+
 
 .product-card {
     transition: transform 0.3s, box-shadow 0.3s;
@@ -47,18 +49,6 @@
     border-top-right-radius: 12px;
     border-bottom: 2px solid rgba(0, 0, 0, 0.1);
 }
-
-.new-label {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: #000000;
-    color: white;
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 12px;
-}
-
 .category-container {
     position: relative;
     display: flex;
@@ -75,15 +65,12 @@
 
 .card-body h5 {
     text-align: left; /* Align product title to left */
-    text-transform: lowercase; /* Make title lowercase */
+    text-transform: uppercase; /* Make title lowercase */
+    font-size: 1rem;
 }
 
 .qty-container {
     margin-top: 0;
-}
-
-.price-container {
-    margin-bottom: px;
 }
 
 .btn-primary {
@@ -104,26 +91,31 @@
     overflow-x: hidden;
     white-space: nowrap;
 }
-
 .price-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    align-items: center; /* Center items vertically */
+    gap: 10px; /* Space between elements */
+    margin-bottom: 0; /* Ensure no extra margin at the bottom */
+}
+
+.discount-amount {
+    color: green; /* Green color for discount */
+    font-size: 0.875rem; /* Adjust font size */
+    line-height: 1; /* Ensure consistent line height */
 }
 
 .original-price {
     text-decoration: line-through;
     color: rgb(80, 80, 80);
-    font-size: 0.875rem;
-    line-height: 1; /* Adjusted line height */
+    font-size: 0.875rem; /* Adjust font size */
+    line-height: 1; /* Ensure consistent line height */
 }
 
 .final-price {
-    color: green;
+    color: green; /* Green color for final price */
     font-weight: bold;
-    font-size: 0.875rem;
-    margin-left: 10px;
-    line-height: 1; /* Adjusted line height */
+    font-size: 0.875rem; /* Adjust font size */
+    line-height: 1; /* Ensure consistent line height */
 }
 
 @media (max-width: 768px) {
@@ -206,6 +198,10 @@ footer {
 a:hover {
     color: #007bff; /* Accent color */
     text-decoration: underline;
+}
+.qty-container button {
+    width: 30px; /* Fixed width for buttons */
+    margin: 0 5px; /* Margin between buttons */
 }
 
 .spinner-container {
@@ -514,110 +510,141 @@ a:hover {
     }
 
     function renderProducts(products) {
-        const categoriesContainer = document.getElementById('productCategories');
-        categoriesContainer.innerHTML = '';
+    const categoriesContainer = document.getElementById('productCategories');
+    categoriesContainer.innerHTML = '';
 
-        const currentTime = new Date().getTime();
+    const currentTime = new Date().getTime();
 
-        for (const category in products) {
-            const categoryDiv = document.createElement('div');
-            categoryDiv.className = 'col-12 mb-4';
+    for (const category in products) {
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'col-12 mb-4';
 
-            const categoryTitle = document.createElement('h4');
-            categoryTitle.className = 'text-left mb-4';
-            categoryTitle.textContent = category;
-            categoryDiv.appendChild(categoryTitle);
+        const categoryTitle = document.createElement('h4');
+        categoryTitle.className = 'text-left mb-4';
+        categoryTitle.textContent = category;
+        categoryDiv.appendChild(categoryTitle);
 
-            const productRow = document.createElement('div');
-            productRow.className = 'overflow-auto d-flex gap-3';
+        const productRow = document.createElement('div');
+        productRow.className = 'overflow-auto d-flex gap-3';
 
-            products[category].forEach(product => {
-                const productCol = document.createElement('div');
-                productCol.className = 'col-auto';
+        products[category].forEach(product => {
+            const productCol = document.createElement('div');
+            productCol.className = 'col-auto';
 
-                const productCard = document.createElement('div');
-                productCard.className = 'card product-card';
-                productCard.style.width = '200px';
+            const productCard = document.createElement('div');
+            productCard.className = 'card product-card';
+            productCard.style.width = '200px';
 
-                const productImage = document.createElement('img');
-                productImage.src = product.imageURL;
-                productImage.className = 'card-img-top';
-                productCard.appendChild(productImage);
+            const productImage = document.createElement('img');
+            productImage.src = product.imageURL;
+            productImage.className = 'card-img-top';
+            productCard.appendChild(productImage);
 
-                const productBody = document.createElement('div');
-                productBody.className = 'card-body text-left';
+            const productBody = document.createElement('div');
+            productBody.className = 'card-body text-left';
 
-                const productName = document.createElement('h5');
-                productName.className = 'card-title';
-                productName.textContent = product.productName;
-                productBody.appendChild(productName);
+            const productName = document.createElement('h5');
+            productName.className = 'card-title';
+            productName.textContent = product.productName;
+            productBody.appendChild(productName);
 
-                const productLabel = document.createElement('span');
-                productLabel.className = 'new-info mb-2';
-                productLabel.textContent = product.productType;
-                productBody.appendChild(productLabel);
+            const productLabel = document.createElement('span');
+            productLabel.className = 'new-info mb-2';
+            productLabel.textContent = product.productType;
+            productBody.appendChild(productLabel);
 
-                const productTimestamp = new Date(product.timestamp).getTime();
-                const fiveHoursInMillis = 5 * 60 * 60 * 1000;
+            const productTimestamp = new Date(product.timestamp).getTime();
+            const fiveHoursInMillis = 5 * 60 * 60 * 1000;
 
-                const timeDiff = currentTime - productTimestamp;
-                if (timeDiff <= fiveHoursInMillis) {
-                    const timeLabel = document.createElement('span');
-                    timeLabel.className = 'badge bg-warning mb-2';
-                    timeLabel.textContent = 'Available for 5 hrs only';
+            const timeDiff = currentTime - productTimestamp;
+            if (timeDiff < fiveHoursInMillis) {
+                const timeLabel = document.createElement('span');
+                timeLabel.className = 'badge bg-warning mb-2';
+                timeLabel.textContent = 'Available for 5 hrs only';
 
-                    setTimeout(() => {
-                        timeLabel.remove();
-                    }, fiveHoursInMillis - timeDiff);
+                setTimeout(() => {
+                    timeLabel.remove();
+                }, fiveHoursInMillis - timeDiff);
+            }
+
+            const priceContainer = document.createElement('div');
+            priceContainer.className = 'price-container mb-2';
+
+            // Calculate discount percentage
+            const originalPrice = parseFloat(product.originalPrice);
+            const finalPrice = parseFloat(product.finalPrice);
+            const discountAmount = originalPrice - finalPrice;
+            const discountPercentage = ((discountAmount / originalPrice) * 100).toFixed(2);
+
+            const discountElement = document.createElement('span');
+            discountElement.className = 'discount-amount text-success';
+            discountElement.innerHTML = `<i class="fa fa-arrow-up"></i> ${discountPercentage}%`;
+
+            const originalPriceElement = document.createElement('span');
+            originalPriceElement.className = 'original-price';
+            originalPriceElement.innerHTML = `₹${originalPrice.toFixed(2)}`;
+
+            const finalPriceElement = document.createElement('span');
+            finalPriceElement.className = 'final-price';
+            finalPriceElement.innerHTML = `₹${finalPrice.toFixed(2)}`;
+
+            priceContainer.appendChild(discountElement);
+            priceContainer.appendChild(originalPriceElement);
+            priceContainer.appendChild(finalPriceElement);
+
+            productBody.appendChild(priceContainer);
+
+            // Quantity buttons
+            const qtyContainer = document.createElement('div');
+            qtyContainer.className = 'd-flex align-items-center qty-container mt-2';
+
+            const qtyLabel = document.createElement('span');
+            qtyLabel.textContent = 'QTY:';
+            qtyLabel.className = 'me-2';
+
+            const qtyDisplay = document.createElement('span');
+            qtyDisplay.textContent = '1'; // Start with 1 by default
+            qtyDisplay.className = 'qty-display me-2';
+
+            const minusButton = document.createElement('button');
+            minusButton.textContent = '-';
+            minusButton.className = 'btn btn-secondary btn-sm';
+            minusButton.onclick = () => {
+                let currentQty = parseInt(qtyDisplay.textContent);
+                if (currentQty > 1) { // Prevent going below 1
+                    currentQty--;
+                    qtyDisplay.textContent = currentQty;
                 }
+            };
 
-                const priceContainer = document.createElement('div');
-                priceContainer.className = 'price-container mb-2';
-
-                const originalPrice = document.createElement('p');
-                originalPrice.className = 'original-price';
-                originalPrice.textContent = `MRP: ₹${product.originalPrice}`;
-
-                const finalPrice = document.createElement('p');
-                finalPrice.className = 'final-price';
-                finalPrice.textContent = `Price: ₹${product.finalPrice}`;
-
-                priceContainer.appendChild(originalPrice);
-                priceContainer.appendChild(finalPrice);
-                productBody.appendChild(priceContainer);
-
-                const qtyInfo = document.createElement('p');
-                qtyInfo.className = 'qty-info';
-                qtyInfo.textContent = `${product.quantity} ${product.qtyUnit}`; 
-                productBody.appendChild(qtyInfo);
-
-                const qtyContainer = document.createElement('div');
-                qtyContainer.className = 'd-flex align-items-center qty-container';
-
-                const qtyLabel = document.createElement('span');
-                qtyLabel.textContent = 'QTY:';
-                qtyLabel.className = 'me-2';
-
-                const qtySelect = document.createElement('select');
-                qtySelect.className = 'form-select w-auto';
-                qtySelect.style.width = "80px";
-
-                const maxQty = Math.min(5, product.stockAvailable);
-                for (let i = 1; i <= maxQty; i++) {
-                    const option = document.createElement('option');
-                    option.value = i;
-                    option.textContent = i;
-                    qtySelect.appendChild(option);
+            const plusButton = document.createElement('button');
+            plusButton.textContent = '+';
+            plusButton.className = 'btn btn-secondary btn-sm';
+            plusButton.onclick = () => {
+                let currentQty = parseInt(qtyDisplay.textContent);
+                const maxQty = Math.min(5, product.stockAvailable); // Limit to available stock or 5
+                if (currentQty < maxQty) {
+                    currentQty++;
+                    qtyDisplay.textContent = currentQty;
                 }
+            };
 
-                qtyContainer.appendChild(qtyLabel);
-                qtyContainer.appendChild(qtySelect);
-                productBody.appendChild(qtyContainer);
+            qtyContainer.appendChild(qtyLabel);
+            qtyContainer.appendChild(qtyDisplay);
+            qtyContainer.appendChild(minusButton);
+            qtyContainer.appendChild(plusButton);
+            productBody.appendChild(qtyContainer);
 
-                const addToCartButton = document.createElement('button');
-                addToCartButton.className = 'btn btn-primary w-100';
-
-                if (cartItems[product.id]) {
+            const addToCartButton = document.createElement('button');
+            addToCartButton.className = 'btn btn-primary w-100';
+            addToCartButton.innerHTML = 'Add to Cart <i class="fa fa-arrow-right"></i>';
+            addToCartButton.addEventListener('click', () => {
+                const quantity = qtyDisplay.textContent;
+                if (parseInt(quantity) > 0) {
+                    addToCart(product, quantity);
+                }
+            });
+            if (cartItems[product.id]) {
                     addToCartButton.innerHTML = '<i class="fa fa-check"></i>';
                     addToCartButton.disabled = true;
                 } else {
@@ -627,17 +654,16 @@ a:hover {
                         addToCart(product, quantity);
                     });
                 }
+            productBody.appendChild(addToCartButton);
+            productCard.appendChild(productBody);
+            productCol.appendChild(productCard);
+            productRow.appendChild(productCol);
+        });
 
-                productBody.appendChild(addToCartButton);
-                productCard.appendChild(productBody);
-                productCol.appendChild(productCard);
-                productRow.appendChild(productCol);
-            });
-
-            categoryDiv.appendChild(productRow);
-            categoriesContainer.appendChild(categoryDiv);
-        }
+        categoryDiv.appendChild(productRow);
+        categoriesContainer.appendChild(categoryDiv);
     }
+}
 
     async function addToCart(product, quantity) {
         const cartRef = ref(database, `carts/${currentUserUid}/${product.id}`);
@@ -691,6 +717,7 @@ a:hover {
         document.getElementById('spinner').style.display = 'none';
     }
 </script>
+
 
 </body>
 </html>
