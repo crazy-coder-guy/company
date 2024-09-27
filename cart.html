@@ -314,40 +314,23 @@
         // Get the user photo URL
         const userProfilePic = user.photoURL || 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png'; // Fallback to a default image if no photo is set
 
-        // Store profile picture in local storage
-        localStorage.setItem('userProfilePic', userProfilePic);
-
         // Update the profile image for desktop and mobile nav
-        updateProfileImage(userProfilePic);
+        const profileIconDesktop = document.getElementById('profileImage');
+        const profileIconMobile = document.querySelector('#profileLink img');
+
+        if (profileIconDesktop) {
+            profileIconDesktop.src = userProfilePic; // Set the desktop profile image source
+            profileIconDesktop.alt = 'User Profile Picture'; // Set alt text
+        }
+
+        if (profileIconMobile) {
+            profileIconMobile.src = userProfilePic; // Set the mobile profile image source
+            profileIconMobile.alt = 'User Profile Picture'; // Set alt text
+        }
     } else {
         alert('You need to log in to view your cart.');
     }
 });
-
-// Function to update profile image in the UI
-function updateProfileImage(src) {
-    const profileIconDesktop = document.getElementById('profileImage');
-    const profileIconMobile = document.querySelector('#profileLink img');
-
-    if (profileIconDesktop) {
-        profileIconDesktop.src = src; // Set the desktop profile image source
-        profileIconDesktop.alt = 'User Profile Picture'; // Set alt text
-    }
-
-    if (profileIconMobile) {
-        profileIconMobile.src = src; // Set the mobile profile image source
-        profileIconMobile.alt = 'User Profile Picture'; // Set alt text
-    }
-}
-
-// Load profile picture from local storage on page load
-window.addEventListener('DOMContentLoaded', () => {
-    const storedProfilePic = localStorage.getItem('userProfilePic');
-    if (storedProfilePic) {
-        updateProfileImage(storedProfilePic);
-    }
-});
-
 
 
     async function fetchCart() {
@@ -490,40 +473,46 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     async function createOrder(cart) {
-        const orderId = `order_${currentUserId}_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-        const orderData = {
-            orderId: orderId,
-            userId: currentUserId,
-            items: cart,
-            totalAmount: calculateTotalAmount(cart),
-            orderDate: new Date().toISOString()
-        };
+    const orderId = `order_${currentUserId}_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+    const orderData = {
+        orderId: orderId,
+        userId: currentUserId,
+        items: cart,
+        totalAmount: calculateTotalAmount(cart),
+        orderDate: new Date().toISOString()
+    };
 
-        const ordersRef = ref(database, `orders/${currentUserId}/${orderId}`);
-        await set(ordersRef, orderData);
-        console.log('Order created:', orderData);
-    }
+    // Reference to store the order in the orders path
+    const ordersRef = ref(database, `orders/${currentUserId}/${orderId}`);
+    await set(ordersRef, orderData);
+    console.log('Order created:', orderData);
+    
+    // Also add the order to the user's account
+    const userOrdersRef = ref(database, `userOrders/${currentUserId}/${orderId}`);
+    await set(userOrdersRef, orderData);
+    console.log('Order added to user account:', orderData);
+}
 
-    function calculateTotalAmount(cart) {
-        let total = 0;
-        Object.values(cart).forEach(item => {
-            total += item.finalPrice * item.quantity;
-        });
-        return total.toFixed(2);
-    }
-
-    document.getElementById('payButton').addEventListener('click', async () => {
-        const cartRef = ref(database, `carts/${currentUserId}`);
-        const snapshot = await get(cartRef);
-        if (snapshot.exists()) {
-            const cart = snapshot.val();
-            await createOrder(cart);
-            await removeAllCartItems();
-            alert('Payment successful! Your cart has been cleared.');
-        } else {
-            alert('Your cart is empty.');
-        }
+function calculateTotalAmount(cart) {
+    let total = 0;
+    Object.values(cart).forEach(item => {
+        total += item.finalPrice * item.quantity;
     });
+    return total.toFixed(2);
+}
+
+document.getElementById('payButton').addEventListener('click', async () => {
+    const cartRef = ref(database, `carts/${currentUserId}`);
+    const snapshot = await get(cartRef);
+    if (snapshot.exists()) {
+        const cart = snapshot.val();
+        await createOrder(cart);
+        await removeAllCartItems();
+        alert('Payment successful! Your cart has been cleared.');
+    } else {
+        alert('Your cart is empty.');
+    }
+});
 
     async function removeAllCartItems() {
         const cartRef = ref(database, `carts/${currentUserId}`);
