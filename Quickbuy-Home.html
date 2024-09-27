@@ -83,10 +83,13 @@
     margin-top: 10px;
 }
 
-.btn-primary:hover {
-    background-color: #c0eba4;
-    transform: translateX(5px); /* Hover effect: move right */
-    color: black;
+.btn.add {
+  background-color: #347928;
+    color: #ffffff; /* Text color */
+    border: none; /* Remove default border */
+    border-radius: 4px; /* Optional: rounded corners */
+    padding: 10px; /* Optional: padding for better spacing */
+    font-size: 16px; /* Optional: font size */
 }
 
 .overflow-auto {
@@ -687,6 +690,7 @@ a:hover {
 
             // Check if item is already in the cart
             if (cartItems[product.id]) {
+                addToCartButton.className = 'btn add w-100';
                 addToCartButton.innerHTML = '<i class="fa-solid fa-basket-shopping fa-bounce"></i> Already in Cart';
                 addToCartButton.disabled = true; // Disable if already added
             }
