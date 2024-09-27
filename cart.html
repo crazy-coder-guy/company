@@ -249,7 +249,7 @@
 </div>
 <!-- Bottom Navbar for Mobile View -->
 <nav class="bottom-nav">
-    <a href="Quickbuy-Home.html"><i class="fas fa-home"></i><br>Home</a>
+    <a href="QuickBuy-Home.html"><i class="fas fa-home"></i><br>Home</a>
     <a href="#" id="profileLink"><img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"><br>You</a>
     <a href="#"><i class="fas fa-ellipsis-h"></i><br>More</a>
     <a href="cart.html"><i class="fas fa-shopping-cart fa-2"></i><br>Cart</a>
@@ -286,8 +286,7 @@
         </div>
     </div>
 </div>
-
-<<script type="module">
+<script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
     import { getDatabase, ref, get, remove, set } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-database.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js";
@@ -307,14 +306,25 @@
     let currentUserId = null;
 
     onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUserId = user.uid;
-            loadCartFromLocalStorage(); // Try loading from local storage first
-            fetchCart(); // Fetch from Firebase as well
-        } else {
-            alert('You need to log in to view your cart.');
+    if (user) {
+        currentUserId = user.uid;
+        loadCartFromLocalStorage(); // Try loading from local storage first
+        fetchCart(); // Fetch from Firebase as well
+
+        // Get the user photo URL
+        const userProfilePic = user.photoURL || 'default-profile-pic.png'; // Fallback to a default image if no photo is set
+
+        // Assuming you have an img element with the class "profile-icon"
+        const profileIcon = document.querySelector('.profile-icon');
+        if (profileIcon) {
+            profileIcon.src = userProfilePic; // Set the profile image source
+            profileIcon.alt = 'User Profile Picture'; // Set alt text
         }
-    });
+    } else {
+        alert('You need to log in to view your cart.');
+    }
+});
+
 
     async function fetchCart() {
         showSpinner(); // Show spinner when fetching cart
