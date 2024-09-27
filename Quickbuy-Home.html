@@ -10,175 +10,204 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
     <title>QuickBuy - Products</title>
     <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: "Rubik", sans-serif;
-        }
-        .new-info {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: #000000;
-            color: white;
-            padding: 5px;
-            border-radius: 5px;
-            font-size: 12px;
-        }
-        .product-card {
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            position: relative;
-            margin-bottom: 15px;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        .card-img-top {
-            height: 150px;
-            object-fit: cover;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-        }
-        .new-label {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: #000000;
-            color: white;
-            padding: 5px;
-            border-radius: 5px;
-            font-size: 12px;
-        }
-        .category-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-            padding: 10px 0;
-        }
-        .card-body {
-            line-height: 1;
-            font-size: 0.875rem;
-        }
-        .qty-container {
-            margin-top: 0;
-        }
-        .price-container {
-            margin-bottom: 1px;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-            border-radius: 25px;
-            transition: background-color 0.3s;
-            padding: 10px 0;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        .overflow-auto {
-            overflow-x: hidden;
-            white-space: nowrap;
-        }
-        .price-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .original-price {
-            text-decoration: line-through;
-            color: red;
-            font-size: 0.875rem;
-            line-height: 1;
-        }
-        .final-price {
-            color: green;
-            font-weight: bold;
-            font-size: 0.875rem;
-            margin-left: 10px;
-            line-height: 1;
-        }
-        @media (max-width: 768px) {
-            .bottom-nav {
-                display: flex;
-                justify-content: space-around;
-                align-items: center;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                background-color: #fff;
-                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-                padding: 10px 0;
-            }
-            .bottom-nav a {
-                font-size: 18px;
-                color: #000;
-                text-align: center;
-                flex-grow: 1;
-                text-decoration: none;
-            }
-            .desktop-nav {
-                display: none;
-            }
-            .mobile-nav {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px;
-                background-color: #fff;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            }
-            .nav-search {
-                max-width: 60%;
-            }
-        }
-        @media (min-width: 769px) {
-            .bottom-nav {
-                display: none;
-            }
-            .desktop-nav {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px;
-                background-color: #fff;
-            }
-            .nav-search {
-                max-width: 500px;
-            }
-            .mobile-nav {
-                display: none;
-            }
-        }
-        .profile-img {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .desktop-nav, .mobile-nav {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background-color: #fff;
-        }
-        .bottom-nav {
-            z-index: 1000;
-        }
-        footer {
-        background-color: #000000;
-      
+       body {
+    background-color: #f8f9fa;
+    font-family: "Rubik", sans-serif;
+}
+
+.new-info {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #000000;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.product-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-img-top {
+    height: 150px;
+    object-fit: fill;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.new-label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #000000;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.category-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 10px 0;
+}
+
+.card-body {
+    line-height: 0.5; /* Keep existing line height */
+    font-size: 0.875rem;
+}
+
+.card-body h5 {
+    text-align: left; /* Align product title to left */
+    text-transform: lowercase; /* Make title lowercase */
+}
+
+.qty-container {
+    margin-top: 0;
+}
+
+.price-container {
+    margin-bottom: px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    border-radius: 25px;
+    transition: background-color 0.3s, transform 0.3s; /* Added transform for hover effect */
+    padding: 10px 0;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateX(5px); /* Hover effect: move right */
+}
+
+.overflow-auto {
+    overflow-x: hidden;
+    white-space: nowrap;
+}
+
+.price-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: rgb(80, 80, 80);
+    font-size: 0.875rem;
+    line-height: 1; /* Adjusted line height */
+}
+
+.final-price {
+    color: green;
+    font-weight: bold;
+    font-size: 0.875rem;
+    margin-left: 10px;
+    line-height: 1; /* Adjusted line height */
+}
+
+@media (max-width: 768px) {
+    .bottom-nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        padding: 10px 0;
     }
-    a:hover {
+    .bottom-nav a {
+        font-size: 18px;
+        color: #000;
+        text-align: center;
+        flex-grow: 1;
+        text-decoration: none;
+    }
+    .desktop-nav {
+        display: none;
+    }
+    .mobile-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .nav-search {
+        max-width: 60%;
+    }
+}
+
+@media (min-width: 769px) {
+    .bottom-nav {
+        display: none;
+    }
+    .desktop-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: #fff;
+    }
+    .nav-search {
+        max-width: 500px;
+    }
+    .mobile-nav {
+        display: none;
+    }
+}
+
+.profile-img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.desktop-nav, .mobile-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #fff;
+}
+
+.bottom-nav {
+    z-index: 1000;
+}
+
+footer {
+    background-color: #000000;
+}
+
+a:hover {
     color: #007bff; /* Accent color */
     text-decoration: underline;
 }
+
 .spinner-container {
     position: fixed; /* Fixed positioning */
     top: 0; /* Align to the top */
@@ -192,6 +221,7 @@
     z-index: 1000; /* Ensure it appears on top */
     display: none; /* Initially hidden */
 }
+
 .loader {
     width: 20px;
     aspect-ratio: 1;
@@ -494,7 +524,7 @@
             categoryDiv.className = 'col-12 mb-4';
 
             const categoryTitle = document.createElement('h4');
-            categoryTitle.className = 'text-center mb-4';
+            categoryTitle.className = 'text-left mb-4';
             categoryTitle.textContent = category;
             categoryDiv.appendChild(categoryTitle);
 
@@ -515,7 +545,7 @@
                 productCard.appendChild(productImage);
 
                 const productBody = document.createElement('div');
-                productBody.className = 'card-body text-center';
+                productBody.className = 'card-body text-left';
 
                 const productName = document.createElement('h5');
                 productName.className = 'card-title';
@@ -558,7 +588,7 @@
 
                 const qtyInfo = document.createElement('p');
                 qtyInfo.className = 'qty-info';
-                qtyInfo.textContent = `Available: ${product.quantity} ${product.qtyUnit}`; 
+                qtyInfo.textContent = `${product.quantity} ${product.qtyUnit}`; 
                 productBody.appendChild(qtyInfo);
 
                 const qtyContainer = document.createElement('div');
