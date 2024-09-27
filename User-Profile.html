@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Firebase and Custom Script -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js';
+        import { getDatabase, ref, get, set } from 'https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.14.0/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBjZDiWXkOclw7RmmU31822nPuj9px1hSA",
+            authDomain: "quickbuy-29329.firebaseapp.com",
+            projectId: "quickbuy-29329",
+            storageBucket: "quickbuy-29329",
+            messagingSenderId: "956510631625",
+            appId: "1:956510631625:web:678411a2530ef065b97f18"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const orderButton = document.getElementById('orderButton');
+            const ordersList = document.getElementById('ordersList');
+            const addressButton = document.getElementById('addressButton');
+            const addressInput = document.getElementById('addressInput');
+            const submitAddressButton = document.getElementById('submitAddressButton');
+            const addressField = document.getElementById('addressField');
+            let ordersVisible = false; // Track the visibility of orders
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const currentUserId = user.uid;
+
+                    orderButton.addEventListener('click', async () => {
+                        if (ordersVisible) {
+                            ordersList.innerHTML = ''; // Clear orders if they are currently visible
+                        } else {
+                            const ordersRef = ref(database, `userOrders/${currentUserId}`);
+                            const snapshot = await get(ordersRef);
+                            if (snapshot.exists()) {
+                                const orders = snapshot.val();
+                                displayOrders(orders);
+                            } else {
+                                alert('No orders found for this user.');
+                            }
+                        }
+                        ordersVisible = !ordersVisible; // Toggle the visibility state
+                    });
+
+                    addressButton.addEventListener('click', () => {
+                        addressField.classList.toggle('d-none'); // Toggle address input visibility
+                    });
+
+                    submitAddressButton.addEventListener('click', async () => {
+                        const address = addressInput.value.trim();
+                        if (address) {
+                            const addressRef = ref(database, `userAddresses/${currentUserId}`);
+                            await set(addressRef, { address });
+                            alert('Address saved successfully!');
+                            addressInput.value = ''; // Clear input field after submission
+                            addressField.classList.add('d-none'); // Hide input field after submission
+                        } else {
+                            alert('Please enter a valid address.');
+                        }
+                    });
+                } else {
+                    alert('No user is signed in.');
+                }
+            });
+        });
+
+        function displayOrders(orders) {
+            const ordersList = document.getElementById('ordersList');
+            ordersList.innerHTML = ''; // Clear previous orders
+            for (const orderId in orders) {
+                const order = orders[orderId];
+                const orderItem = document.createElement('li');
+                orderItem.classList.add('list-group-item', 'p-2', 'shadow-sm', 'rounded', 'mb-1'); // Reduced margin
+
+                let itemsHTML = '';
+                if (Array.isArray(order.items)) {
+                    itemsHTML = order.items.map(item => `
+                        <div class="text-center me-3">
+                            <img src="${item.imageURL}" alt="Item Image" class="img-fluid" style="width: 80px; height: 80px; border-radius: 5px;">
+                            <div>₹${item.finalPrice}</div>
+                        </div>
+                    `).join('');
+                } else if (typeof order.items === 'object') {
+                    itemsHTML = Object.values(order.items).map(item => `
+                        <div class="text-center me-3">
+                            <img src="${item.imageURL}" alt="Item Image" class="img-fluid" style="width: 80px; height: 80px; border-radius: 5px;">
+                            <div>₹${item.finalPrice}</div>
+                        </div>
+                    `).join('');
+                }
+
+                orderItem.innerHTML = `
+                    <div class="d-flex flex-wrap justify-content-start" style="max-height: 160px; overflow-y: auto;">
+                        ${itemsHTML}
+                    </div>
+                `;
+                ordersList.appendChild(orderItem);
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: "Rubik", sans-serif;
+        }
+        .new-info {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            background-color: #347928;
+            color: white;
+            padding: 5px;
+            border-radius: 2px; /* Unified border-radius property */
+            border: none; /* Changed from groove to none */
+            font-size: 15px;
+            text-align: left; /* Align text to the left */
+            border-top-left-radius: 12px;
+        }
+
+        /* Fixed order list with vertical scroll */
+        #ordersList {
+            max-height: 320px; /* Height for two rows */
+            overflow-y: auto; /* Vertical scroll */
+        }
+
+        .product-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-img-top {
+            height: 150px;
+            object-fit: cover;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+        }
+        .category-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            padding: 10px 0;
+        }
+
+        .card-body {
+            line-height: 1; /* Keep existing line height */
+            font-size: 0.875rem;
+        }
+
+        .card-body h5 {
+            text-align: left; /* Align product title to left */
+            text-transform: uppercase; /* Make title lowercase */
+            font-size: 1rem;
+        }
+
+        .qty-container {
+            margin-top: 0;
+        }
+
+        .btn-primary {
+            background-color: #347928;
+            border: none;
+            border-radius: 25px;
+            transition: background-color 0.3s, transform 0.3s; /* Added transform for hover effect */
+            padding: 10px 0;
+            margin-top: 10px;
+        }
+
+        .btn.add {
+            background-color: #347928;
+            color: #ffffff; /* Text color */
+            border: none; /* Remove default border */
+            border-radius: 4px; /* Optional: rounded corners */
+            padding: 10px; /* Optional: padding for better spacing */
+            font-size: 16px; /* Optional: font size */
+        }
+
+        .overflow-auto {
+            overflow-x: hidden;
+            white-space: nowrap;
+        }
+        .price-container {
+            display: flex;
+            align-items: center; /* Center items vertically */
+            gap: 10px; /* Space between elements */
+            margin-bottom: 0; /* Ensure no extra margin at the bottom */
+        }
+
+        .discount-amount {
+            color: green; /* Green color for discount */
+            font-size: 0.875rem; /* Adjust font size */
+            line-height: 1; /* Ensure consistent line height */
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: rgb(80, 80, 80);
+            font-size: 0.875rem; /* Adjust font size */
+            line-height: 1; /* Ensure consistent line height */
+        }
+
+        .final-price {
+            color: green; /* Green color for final price */
+            font-weight: bold;
+            font-size: 0.875rem; /* Adjust font size */
+            line-height: 1; /* Ensure consistent line height */
+        }
+
+        @media (max-width: 768px) {
+            .bottom-nav {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background-color: #fff;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+                padding: 10px 0;
+            }
+            .bottom-nav a {
+                font-size: 18px;
+                color: #000;
+                text-align: center;
+                flex-grow: 1;
+                text-decoration: none;
+            }
+            .desktop-nav {
+                display: none;
+            }
+            .mobile-nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #fff;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            .nav-search {
+                max-width: 60%;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .bottom-nav {
+                display: none;
+            }
+            .desktop-nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #fff;
+            }
+            .nav-search {
+                max-width: 500px;
+            }
+            .mobile-nav {
+                display: none;
+            }
+        }
+
+        .profile-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .desktop-nav, .mobile-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: #fff;
+        }
+
+        .bottom-nav {
+            z-index: 1000;
+        }
+
+        footer {
+            background-color: #000000;
+        }
+
+        a:hover {
+            color: #007bff; /* Accent color */
+            text-decoration: underline;
+        }
+        .qty-container {
+            display: flex;
+            align-items: center; /* Center items vertically */
+        }
+
+        .qty-container {
+            display: flex;
+            align-items: center; /* Center items vertically */
+        }
+
+        .qty-display-container {
+            margin: 0 10px; /* Add margin for spacing */
+            text-align: center; /* Center the text within the span */
+            background-color: rgb(255, 255, 255); /* White background for the quantity display */
+            padding: 1px; /* Add some padding for better spacing */
+            border-radius: 4px; /* Optional: rounded corners */
+        }
+
+        .spinner-container {
+            position: fixed; /* Fixed positioning */
+            top: 0; /* Align to the top */
+            left: 0; /* Align to the left */
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            display: flex; /* Use flexbox */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            background-color: rgb(255, 255, 255); /* Optional: semi-transparent background */
+            z-index: 1000; /* Ensure it appears on top */
+            display: none; /* Initially hidden */
+        }
+
+        .loader {
+            width: 20px;
+            aspect-ratio: 1;
+            background: #25b09b;
+            box-shadow: 0 0 60px 15px #25b09b;
+            transform: translate(-80px);
+            clip-path: inset(0);
+            animation:
+                l4-1 0.5s ease-in-out infinite alternate,
+                l4-2 1s ease-in-out infinite;
+        }
+
+        @keyframes l4-1 {
+            100% { transform: translateX(80px); }
+        }
+
+        @keyframes l4-2 {
+            33% { clip-path: inset(0 0 0 -100px); }
+            50% { clip-path: inset(0 0 0 0); }
+            83% { clip-path: inset(0 -100px 0 0); }
+        }
+    </style>
+</head>
+<body>
+    
+<!-- Mobile Navbar -->
+<nav class="navbar mobile-nav">
+    <a class="navbar-brand" href="#">QuickBuy</a>
+    <form class="d-flex nav-search">
+        <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">
+                <i class="fas fa-search"></i>
+            </span>
+            <input class="form-control border-start-0" type="search" placeholder="Search for apples..." aria-label="Search" id="searchInput">
+        </div>
+    </form>
+</nav>
+
+<!-- Desktop Navbar -->
+<nav class="navbar desktop-nav">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">QuickBuy</a>
+        <form class="d-flex nav-search">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="search" class="form-control border-start-0" placeholder="Search for apples..." aria-label="Search" id="searchInputDesktop">
+            </div>
+        </form>
+        <div class="d-flex align-items-center">
+            <a href="cart.html" class="me-3"><i class="fas fa-shopping-cart fa-2"></i></a>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="Profile" class="profile-img" id="profileImage">
+        </div>
+    </div>
+</nav>
+
+<!-- Bottom Navbar for Mobile View -->
+<nav class="bottom-nav">
+    <a href="Quickbuy.html"><i class="fas fa-home"></i><br>Home</a>
+    <a href="User-Profile.html" id="profileLink"><img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"><br>You</a>
+    <a href="#"><i class="fas fa-ellipsis-h"></i><br>More</a>
+    <a href="cart.html"><i class="fas fa-shopping-cart fa-2"></i><br>Cart</a>
+</nav>
+    <div class="container mt-5">
+        <h1>User Profile</h1>
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <button id="orderButton" class="btn btn-primary">View Orders</button>
+            </div>
+        </div>
+
+        <h3 class="mt-5">Your Orders</h3>
+        <ul class="list-group" id="ordersList"></ul>
+
+        <!-- Address Section -->
+        <div class="address-container">
+            <button id="addressButton" class="btn btn-secondary mt-4">Add/Update Address</button>
+            <div id="addressField" class="d-none mt-2">
+                <input type="text" id="addressInput" class="form-control" placeholder="Enter your address">
+                <button id="submitAddressButton" class="btn btn-success mt-2">Submit Address</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
