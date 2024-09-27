@@ -249,7 +249,7 @@
 </div>
 <!-- Bottom Navbar for Mobile View -->
 <nav class="bottom-nav">
-    <a href="Quickbuy-Home.html"><i class="fas fa-home"></i><br>Home</a>
+    <a href="QuickBuy-Home.html"><i class="fas fa-home"></i><br>Home</a>
     <a href="#" id="profileLink"><img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"><br>You</a>
     <a href="#"><i class="fas fa-ellipsis-h"></i><br>More</a>
     <a href="cart.html"><i class="fas fa-shopping-cart fa-2"></i><br>Cart</a>
@@ -312,13 +312,20 @@
         fetchCart(); // Fetch from Firebase as well
 
         // Get the user photo URL
-        const userProfilePic = user.photoURL || 'default-profile-pic.png'; // Fallback to a default image if no photo is set
+        const userProfilePic = user.photoURL || 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png'; // Fallback to a default image if no photo is set
 
-        // Assuming you have an img element with the class "profile-icon"
-        const profileIcon = document.querySelector('.profile-icon');
-        if (profileIcon) {
-            profileIcon.src = userProfilePic; // Set the profile image source
-            profileIcon.alt = 'User Profile Picture'; // Set alt text
+        // Update the profile image for desktop and mobile nav
+        const profileIconDesktop = document.getElementById('profileImage');
+        const profileIconMobile = document.querySelector('#profileLink img');
+
+        if (profileIconDesktop) {
+            profileIconDesktop.src = userProfilePic; // Set the desktop profile image source
+            profileIconDesktop.alt = 'User Profile Picture'; // Set alt text
+        }
+
+        if (profileIconMobile) {
+            profileIconMobile.src = userProfilePic; // Set the mobile profile image source
+            profileIconMobile.alt = 'User Profile Picture'; // Set alt text
         }
     } else {
         alert('You need to log in to view your cart.');
