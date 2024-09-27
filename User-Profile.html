@@ -79,38 +79,39 @@
         });
 
         function displayOrders(orders) {
-            const ordersList = document.getElementById('ordersList');
-            ordersList.innerHTML = ''; // Clear previous orders
-            for (const orderId in orders) {
-                const order = orders[orderId];
-                const orderItem = document.createElement('li');
-                orderItem.classList.add('list-group-item', 'p-2', 'shadow-sm', 'rounded', 'mb-1'); // Reduced margin
+    const ordersList = document.getElementById('ordersList');
+    ordersList.innerHTML = ''; // Clear previous orders
+    for (const orderId in orders) {
+        const order = orders[orderId];
+        const orderItem = document.createElement('li');
+        orderItem.classList.add('list-group-item', 'p-2', 'shadow-sm', 'rounded', 'mb-1');
 
-                let itemsHTML = '';
-                if (Array.isArray(order.items)) {
-                    itemsHTML = order.items.map(item => `
-                        <div class="text-center me-3">
-                            <img src="${item.imageURL}" alt="Item Image" class="img-fluid" style="width: 80px; height: 80px; border-radius: 5px;">
-                            <div>₹${item.finalPrice}</div>
-                        </div>
-                    `).join('');
-                } else if (typeof order.items === 'object') {
-                    itemsHTML = Object.values(order.items).map(item => `
-                        <div class="text-center me-3">
-                            <img src="${item.imageURL}" alt="Item Image" class="img-fluid" style="width: 80px; height: 80px; border-radius: 5px;">
-                            <div>₹${item.finalPrice}</div>
-                        </div>
-                    `).join('');
-                }
-
-                orderItem.innerHTML = `
-                    <div class="d-flex flex-wrap justify-content-start" style="max-height: 160px; overflow-y: auto;">
-                        ${itemsHTML}
-                    </div>
-                `;
-                ordersList.appendChild(orderItem);
-            }
+        let itemsHTML = '';
+        if (Array.isArray(order.items)) {
+            itemsHTML = order.items.map(item => `
+                <div class="text-center me-3" style="flex: 0 0 auto;">
+                    <img src="${item.imageURL}" alt="Item Image" class="img-fluid" style="width: 80px; height: 80px; border-radius: 5px;">
+                    <div>₹${item.finalPrice}</div>
+                </div>
+            `).join('');
+        } else if (typeof order.items === 'object') {
+            itemsHTML = Object.values(order.items).map(item => `
+                <div class="text-center me-3" style="flex: 0 0 auto;">
+                    <img src="${item.imageURL}" alt="Item Image" class="img-fluid" style="width: 80px; height: 80px; border-radius: 5px;">
+                    <div>₹${item.finalPrice}</div>
+                </div>
+            `).join('');
         }
+
+        orderItem.innerHTML = `
+            <div class="d-flex overflow-auto" style="max-height: 160px; white-space: nowrap;">
+                ${itemsHTML}
+            </div>
+        `;
+        ordersList.appendChild(orderItem);
+    }
+}
+
     </script>
 
     <style>
@@ -404,7 +405,7 @@
 
 <!-- Bottom Navbar for Mobile View -->
 <nav class="bottom-nav">
-    <a href="Quickbuy.html"><i class="fas fa-home"></i><br>Home</a>
+    <a href="#"><i class="fas fa-home"></i><br>Home</a>
     <a href="User-Profile.html" id="profileLink"><img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"><br>You</a>
     <a href="#"><i class="fas fa-ellipsis-h"></i><br>More</a>
     <a href="cart.html"><i class="fas fa-shopping-cart fa-2"></i><br>Cart</a>
