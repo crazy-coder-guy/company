@@ -277,7 +277,6 @@ a:hover {
 </head>
 <body>
    
-    
 <!-- Mobile Navbar -->
 <nav class="navbar mobile-nav">
     <a class="navbar-brand" href="#">QuickBuy</a>
@@ -601,16 +600,19 @@ a:hover {
 
             const priceContainer = document.createElement('div');
             priceContainer.className = 'price-container mb-2';
-
             // Calculate discount percentage
             const originalPrice = parseFloat(product.originalPrice);
             const finalPrice = parseFloat(product.finalPrice);
             const discountAmount = originalPrice - finalPrice;
-            const discountPercentage = ((discountAmount / originalPrice) * 100).toFixed(2);
 
+            // Use Math.floor() to get the integer part of the discount percentage
+            const discountPercentage = Math.floor((discountAmount / originalPrice) * 100);
+
+            // Create discount element
             const discountElement = document.createElement('span');
             discountElement.className = 'discount-amount text-success';
-            discountElement.innerHTML = `<i class="fa-solid fa-arrow-up fa-fade"></i> ${discountPercentage}%`;
+            discountElement.innerHTML = `<i class="fa-solid fa-arrow-up fa-fade"></i> ${discountPercentage}`; // No % sign
+
 
             const originalPriceElement = document.createElement('span');
             originalPriceElement.className = 'original-price';
