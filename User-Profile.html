@@ -76,7 +76,7 @@
     width: 35px;
     height: 35px;
     border-radius: 50%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .desktop-nav, .mobile-nav {
@@ -95,7 +95,7 @@
             height: 80px; /* Reduced size */
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #347928;
+            border: 0px solid #000000;
         }
 
         .card {
@@ -111,15 +111,26 @@
             text-align: center;
             padding: 10px 0;
         }
+        .profile-info {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+}
 
-        .profile-header {
-            display: flex;
-            align-items: center;
-        }
+.profile-info h5, .profile-info p {
+    margin: 0; /* Remove default margins */
+    padding: 0; /* Remove default padding */
+}
 
-        .profile-header h5 {
-            margin-left: 15px;
-        }
+.profile-info h5 {
+    display: inline-block; /* Align text inline */
+}
+
+.profile-info p {
+    display: inline-block; /* Align text inline */
+    margin-top: 4px; /* Adjust as needed for spacing */
+    margin-left: 0; /* Ensure no left margin */
+}
+
 
         .faq-section {
             display: none; /* Initially hidden */
@@ -216,7 +227,7 @@
 
 <!-- Bottom Navbar for Mobile View -->
 <nav class="bottom-nav">
-    <a href="Quickbuy-Home.html"><i class="fas fa-home"></i><br>Home</a>
+    <a href="#"><i class="fas fa-home"></i><br>Home</a>
     <a href="User-Profile.html" id="profileLink"><img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"><br>You</a>
     <a href="#"><i class="fas fa-ellipsis-h"></i><br>More</a>
     <a href="cart.html"><i class="fas fa-shopping-cart fa-2"></i><br>Cart</a>
@@ -224,10 +235,10 @@
 <div class="container mt-5">
     <div class="profile-header mb-4">
         <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="Profile" class="profile-img" id="profileImageDisplay">
-        <div>
+        <div class="profile-info">
             <h5 id="fullNameDisplay"></h5>
-            <p id="mobileDisplay" class="mb-0"></p> <!-- Mobile number displayed here -->
-        </div>
+            <p id="mobileDisplay" class="mb-0"></p>
+        </div>        
     </div>
 
     <!-- User Input Section -->
@@ -255,6 +266,7 @@
             <ul class="list-group mt-3" id="ordersList" style="display: none;"></ul>
         </div>
     </div>
+
 
     <div class="card mb-4">
         <div class="card-header">
@@ -306,7 +318,6 @@
 <footer>
     <p>&copy; 2024 QuickBuy. All Rights Reserved.</p>
 </footer>
-
 <!-- Firebase and Custom Script -->
 <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js';
@@ -328,7 +339,7 @@
     const auth = getAuth(app);
     const storage = getStorage(app);
 
-    // Function to load user data from local storage
+    // Load user data from local storage on page load
     function loadUserData() {
         const userData = JSON.parse(localStorage.getItem('userData'));
         if (userData) {
@@ -341,7 +352,7 @@
         }
     }
 
-    // Load user data from local storage on page load
+    // Load user data on page load
     loadUserData();
 
     onAuthStateChanged(auth, (user) => {
@@ -352,11 +363,7 @@
                     const userData = snapshot.val();
                     // Update local storage with user data
                     localStorage.setItem('userData', JSON.stringify(userData));
-                    // Update UI
-                    document.getElementById('fullNameDisplay').innerText = userData.fullName || '';
-                    document.getElementById('mobileDisplay').innerText = userData.mobile || '';
-                    document.getElementById('profileImageDisplay').src = userData.photo || 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png';
-                    document.getElementById('updateProfileCard').style.display = 'none';
+                    loadUserData(); // Refresh displayed user data
                 } else {
                     // Show input fields for first-time users
                     document.getElementById('updateProfileCard').style.display = 'block';
@@ -369,118 +376,88 @@
         }
     });
 
-    document.getElementById('saveProfileButton').onclick = function() {
+    // Function to create a new user profile
+    async function createProfile(name, mobile, photoFile) {
         const uid = auth.currentUser.uid;
-        const name = document.getElementById('nameInput').value;
-        const mobile = document.getElementById('mobileInput').value;
-        const photoFile = document.getElementById('photoInput').files[0];
+        let photoURL = null;
 
         if (photoFile) {
             const photoStorageRef = storageRef(storage, `userPhotos/${uid}/${photoFile.name}`);
-            uploadBytes(photoStorageRef, photoFile).then((snapshot) => {
-                getDownloadURL(photoStorageRef).then((downloadURL) => {
-                    const userData = {
-                        fullName: name,
-                        mobile: mobile,
-                        photo: downloadURL
-                    };
-                    set(ref(database, 'users/' + uid), userData)
-                    .then(() => {
-                        alert('Profile updated successfully!');
-                        // Update local storage with new user data
-                        localStorage.setItem('userData', JSON.stringify(userData));
-                        document.getElementById('fullNameDisplay').innerText = name;
-                        document.getElementById('mobileDisplay').innerText = mobile;
-                        document.getElementById('profileImageDisplay').src = downloadURL;
-                        document.getElementById('updateProfileCard').style.display = 'none';
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                    });
-                });
-            }).catch((error) => {
-                console.error(error);
-            });
+            await uploadBytes(photoStorageRef, photoFile);
+            photoURL = await getDownloadURL(photoStorageRef);
+        }
+
+        const userData = {
+            fullName: name,
+            mobile: mobile,
+            photo: photoURL || ''
+        };
+
+        await set(ref(database, 'users/' + uid), userData);
+        alert('Profile created successfully!');
+        localStorage.setItem('userData', JSON.stringify(userData));
+        loadUserData();
+    }
+
+    document.getElementById('orderButton').onclick = function() {
+        const ordersList = document.getElementById('ordersList');
+        const uid = auth.currentUser.uid;
+
+        if (ordersList.style.display === 'block') {
+            ordersList.style.display = 'none';
         } else {
-            const userData = {
-                fullName: name,
-                mobile: mobile
-            };
-            set(ref(database, 'users/' + uid), userData)
-            .then(() => {
-                alert('Profile updated successfully!');
-                // Update local storage with new user data
-                localStorage.setItem('userData', JSON.stringify(userData));
-                document.getElementById('fullNameDisplay').innerText = name;
-                document.getElementById('mobileDisplay').innerText = mobile;
-                document.getElementById('updateProfileCard').style.display = 'none';
-            })
-            .catch((error) => {
+            get(ref(database, 'orders/' + uid)).then((snapshot) => {
+                ordersList.innerHTML = '';
+                if (snapshot.exists()) {
+                    const orders = snapshot.val();
+                    const itemImages = {}; // Object to hold item images for local storage
+
+                    for (const orderId in orders) {
+                        const order = orders[orderId];
+                        const orderItemContainer = document.createElement('div');
+                        orderItemContainer.classList.add('order-item-container');
+                        const orderDate = new Date(order.orderDate);
+                        const orderDateElement = document.createElement('h6');
+                        orderDateElement.innerText = orderDate.toLocaleDateString();
+                        orderDateElement.classList.add('order-date');
+                        orderItemContainer.appendChild(orderDateElement);
+                        
+                        if (order.items) {
+                            const itemsContainer = document.createElement('div');
+                            itemsContainer.classList.add('order-items');
+                            for (const itemId in order.items) {
+                                const item = order.items[itemId];
+                                const orderItem = document.createElement('div');
+                                orderItem.classList.add('order-item');
+                                orderItem.innerHTML = `
+                                    <img src="${item.imageURL}" alt="${item.productName}">
+                                    <div>
+                                        <strong>${item.productName}</strong> - ${item.quantity} ${item.availableQuantity} ${item.qtyUnit} 
+                                    </div>
+                                `;
+                                itemsContainer.appendChild(orderItem);
+                                
+                                // Store item image URL in local storage
+                                itemImages[itemId] = item.imageURL;
+                            }
+                            orderItemContainer.appendChild(itemsContainer);
+                        }
+                        ordersList.appendChild(orderItemContainer);
+                    }
+
+                    // Save item images to local storage
+                    localStorage.setItem('itemImages', JSON.stringify(itemImages));
+                    
+                    ordersList.style.display = 'block';
+                } else {
+                    alert('No orders found.');
+                    ordersList.style.display = 'none';
+                }
+            }).catch((error) => {
                 console.error(error);
             });
         }
     };
-
-    document.getElementById('orderButton').onclick = function() {
-    const ordersList = document.getElementById('ordersList');
-    const uid = auth.currentUser.uid;
-
-    if (ordersList.style.display === 'block') {
-        ordersList.style.display = 'none';
-    } else {
-        get(ref(database, 'orders/' + uid)).then((snapshot) => {
-            ordersList.innerHTML = '';
-            if (snapshot.exists()) {
-                const orders = snapshot.val();
-                const itemImages = {}; // Object to hold item images for local storage
-
-                for (const orderId in orders) {
-                    const order = orders[orderId];
-                    const orderItemContainer = document.createElement('div');
-                    orderItemContainer.classList.add('order-item-container');
-                    const orderDate = new Date(order.orderDate);
-                    const orderDateElement = document.createElement('h6');
-                    orderDateElement.innerText = orderDate.toLocaleDateString();
-                    orderDateElement.classList.add('order-date');
-                    orderItemContainer.appendChild(orderDateElement);
-                    
-                    if (order.items) {
-                        const itemsContainer = document.createElement('div');
-                        itemsContainer.classList.add('order-items');
-                        for (const itemId in order.items) {
-                            const item = order.items[itemId];
-                            const orderItem = document.createElement('div');
-                            orderItem.classList.add('order-item');
-                            orderItem.innerHTML = `
-                                <img src="${item.imageURL}" alt="${item.productName}">
-                                <div>
-                                    <strong>${item.productName}</strong> - ${item.quantity} ${item.availableQuantity} ${item.qtyUnit} 
-                                </div>
-                            `;
-                            itemsContainer.appendChild(orderItem);
-                            
-                            // Store item image URL in local storage
-                            itemImages[itemId] = item.imageURL;
-                        }
-                        orderItemContainer.appendChild(itemsContainer);
-                    }
-                    ordersList.appendChild(orderItemContainer);
-                }
-
-                // Save item images to local storage
-                localStorage.setItem('itemImages', JSON.stringify(itemImages));
-                
-                ordersList.style.display = 'block';
-            } else {
-                alert('No orders found.');
-                ordersList.style.display = 'none';
-            }
-        }).catch((error) => {
-            console.error(error);
-        });
-    }
-};
-
 
     // FAQ and Terms buttons functionality
     document.getElementById('faqButton').onclick = function() {
