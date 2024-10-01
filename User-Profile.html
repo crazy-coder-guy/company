@@ -111,26 +111,29 @@
             text-align: center;
             padding: 10px 0;
         }
-        .profile-info {
+
+        .profile-header {
+    display: flex;
+    align-items: center; /* Vertically center all items */
+}
+
+.profile-image {
+    width: 50px; /* Set a fixed width for the image */
+    height: 50px; /* Set a fixed height for the image */
+    border-radius: 50%; /* Optional: makes the image circular */
+    margin-right: 20px; /* Adjust this value for the gap */
+}
+
+.profile-info {
     display: flex;
     flex-direction: column; /* Stack items vertically */
+    justify-content: center; /* Center items vertically */
 }
 
 .profile-info h5, .profile-info p {
     margin: 0; /* Remove default margins */
-    padding: 0; /* Remove default padding */
+    width: 150px; /* Adjust as needed */
 }
-
-.profile-info h5 {
-    display: inline-block; /* Align text inline */
-}
-
-.profile-info p {
-    display: inline-block; /* Align text inline */
-    margin-top: 4px; /* Adjust as needed for spacing */
-    margin-left: 0; /* Ensure no left margin */
-}
-
 
         .faq-section {
             display: none; /* Initially hidden */
@@ -235,10 +238,10 @@
 <div class="container mt-5">
     <div class="profile-header mb-4">
         <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="Profile" class="profile-img" id="profileImageDisplay">
-        <div class="profile-info">
+        <div>
             <h5 id="fullNameDisplay"></h5>
-            <p id="mobileDisplay" class="mb-0"></p>
-        </div>        
+            <p id="mobileDisplay" class="mb-0"></p> <!-- Mobile number displayed here -->
+        </div>
     </div>
 
     <!-- User Input Section -->
@@ -267,6 +270,19 @@
         </div>
     </div>
 
+      <!-- User Input Section -->
+      <div class="card" id="updateProfileCard">
+        <div class="card-header">
+            <h5 class="mb-0">Create/Update Profile</h5>
+        </div>
+        <div class="card-body">
+            <input type="text" id="nameInput" class="form-control mb-2" placeholder="Enter Name">
+            <input type="text" id="mobileInput" class="form-control mb-2" placeholder="Enter Mobile Number">
+            <input type="text" id="addressInput" class="form-control mb-2" placeholder="Enter Address">
+            <input type="file" id="photoInput" class="form-control mb-2" accept="image/*">
+            <button id="saveProfileButton" class="btn btn-primary">Save Profile</button>
+        </div>
+    </div>
 
     <div class="card mb-4">
         <div class="card-header">
