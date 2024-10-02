@@ -155,7 +155,7 @@
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
     .nav-search {
-        max-width: 60%;
+        max-width: 100%;
     }
 }
 
@@ -179,7 +179,6 @@
     .delivery-info {
     margin-bottom: 10px;
 }
-
 #deliveryText {
     font-size: 14px;
 }
@@ -397,8 +396,8 @@ a:hover {
     <div class="delivery-info">
         <p id="deliveryText" class="text-muted">Delivery</p>
     </div>
-    <form class="d-flex nav-search">
-        <div class="input-group">
+    <form class="d-flex nav-search w-100"> <!-- Add w-100 class for full width -->
+        <div class="input-group w-100"> <!-- Add w-100 class for full width -->
             <span class="input-group-text bg-white border-end-0">
                 <i class="fas fa-search"></i>
             </span>
@@ -978,6 +977,59 @@ setInterval(() => {
     moveToCard(currentIndex);
 }, 2000);
 
+// Function to calculate distance
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of the Earth in km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+}
+
+function deg2rad(deg) {
+    return deg * (Math.PI / 180);
+}
+
+// Function to fetch all user data from Firebase
+async function getAllUsersData() {
+    const usersRef = ref(database, 'users/');
+    const snapshot = await get(usersRef);
+    return snapshot.exists() ? snapshot.val() : null;
+}
+
+// Update delivery time on page load
+document.addEventListener("DOMContentLoaded", async function() {
+    const usersData = await getAllUsersData();
+    const deliveryText = document.getElementById("deliveryText");
+
+    if (usersData) {
+        // Loop through each user to calculate delivery time
+        for (const userId in usersData) {
+            const user = usersData[userId];
+
+            // Ensure user has location data
+            if (user.location && user.location.latitude && user.location.longitude) {
+                const userLocation = {
+                    latitude: user.location.latitude,
+                    longitude: user.location.longitude
+                };
+
+                // Calculate distance using a predefined delivery point (this could be a user location if needed)
+                const deliveryPoint = { latitude: userLocation.latitude, longitude: userLocation.longitude }; // Example: using user's location as the delivery point
+                const distance = getDistanceFromLatLonInKm(userLocation.latitude, userLocation.longitude, deliveryPoint.latitude, deliveryPoint.longitude);
+                
+                // Set delivery time based on distance
+                const deliveryTime = distance <= 10 ? "1 day" : "2 days";
+                deliveryText.textContent += ` in ${deliveryTime}`;
+            }
+        }
+    } else {
+        deliveryText.textContent = "No user data available.";
+    }
+});
 
 </script>
 <script>
@@ -1003,67 +1055,7 @@ changePlaceholder();
         } else {
             console.error(`Category section "${category}" not found.`);
         }
-    }
-// Function to calculate delivery time based on distance
-function calculateDeliveryTime(userLocation, productLocation) {
-    const distance = getDistanceFromLatLonInKm(userLocation.lat, userLocation.lon, productLocation.lat, productLocation.lon);
-    let deliveryTime = "";
-
-    if (distance <= 10) {
-        deliveryTime = "1 day"; // Within 5 km
-    } else {
-        deliveryTime = "2 days"; // Greater than 5 km
-    }
-
-    return deliveryTime;
-}
-
-// Update delivery time on page load
-document.addEventListener("DOMContentLoaded", function() {
-    const userLocation = getUserLocation();
-    const productLocation = { lat: 40.730610, lon: -73.935242 }; // Example product coordinates
-    const deliveryTime = calculateDeliveryTime(userLocation, productLocation);
-    
-    const deliveryText = document.getElementById("deliveryText");
-    deliveryText.textContent = deliveryTime; // Display the updated delivery time
-});
-
-
-// Example function to get the user's location
-function getUserLocation() {
-    // This is just a placeholder for user coordinates.
-    // In a real application, you would get the coordinates via Geolocation API or other means.
-    return { lat: 40.7128, lon: -74.0060 }; // Example: New York City coordinates
-}
-
-// Function to get distance between two lat/lon points
-function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Radius of the earth in km
-    const dLat = deg2rad(lat2 - lat1);
-    const dLon = deg2rad(lon2 - lon1);
-    const a = 
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-        Math.sin(dLon/2) * Math.sin(dLon/2); 
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-    const distance = R * c; // Distance in km
-    return distance;
-}
-
-// Converts degrees to radians
-function deg2rad(deg) {
-    return deg * (Math.PI/180);
-}
-
-// Update delivery time on page load
-document.addEventListener("DOMContentLoaded", function() {
-    const userLocation = getUserLocation();
-    const productLocation = { lat: 40.730610, lon: -73.935242 }; // Example product coordinates
-    const deliveryTime = calculateDeliveryTime(userLocation, productLocation);
-    
-    const deliveryText = document.getElementById("deliveryText");
-    deliveryText.textContent = `Delivery in ${deliveryTime}`;
-});
+    } 
 
 </script>
 
