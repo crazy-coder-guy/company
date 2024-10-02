@@ -403,7 +403,7 @@ a:hover {
     <div class="delivery-info">
         <p id="deliveryText" class="text-muted">Delivery</p>
     </div>
-    <form class="d-flex nav-search w-100"> <!-- Full width -->
+    <form id="searchForm" class="d-flex nav-search w-100"> <!-- Full width -->
         <div class="input-group w-100"> <!-- Full width -->
             <span class="input-group-text bg-white border-end-0">
                 <i class="fas fa-search"></i>
@@ -412,6 +412,7 @@ a:hover {
         </div>
     </form>
 </nav>
+
 
 
 
@@ -487,8 +488,6 @@ a:hover {
     </div>
 </div>
 
-
-
 <div class="offer-slider mt-1">
     <div class="offer-card">
         <img src="https://cdn.grabon.in/gograbon/images/web-images/uploads/1618548899692/groceries-offers.jpg" alt="Offer 1" />
@@ -509,6 +508,7 @@ a:hover {
     <h2 class="text-center mb-4"></h2>
     <div id="productCategories" class="row"></div>
 </div>
+
 <footer class="bg-light text-center text-lg-start mt-5">
     <div class="container p-4">
         <div class="row">
@@ -918,34 +918,42 @@ async function addToCart(product, quantity) {
 }
 
 
-    function filterProducts() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase() || 
-                           document.getElementById('searchInputDesktop').value.toLowerCase();
-        const filteredProducts = {};
+function filterProducts() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase() || 
+                       document.getElementById('searchInputDesktop').value.toLowerCase();
+    const filteredProducts = {};
 
-        for (const category in allProducts) {
-            const productsInCategory = allProducts[category].filter(product =>
-                product.productName.toLowerCase().includes(searchTerm)
-            );
+    for (const category in allProducts) {
+        const productsInCategory = allProducts[category].filter(product =>
+            product.productName.toLowerCase().includes(searchTerm)
+        );
 
-            if (productsInCategory.length > 0) {
-                filteredProducts[category] = productsInCategory;
-            }
+        if (productsInCategory.length > 0) {
+            filteredProducts[category] = productsInCategory;
         }
-
-        renderProducts(filteredProducts);
     }
 
-    document.getElementById('searchInput').addEventListener('input', filterProducts);
-    document.getElementById('searchInputDesktop').addEventListener('input', filterProducts);
+    renderProducts(filteredProducts);
+}
 
-    function showSpinner() {
-        document.getElementById('spinner').style.display = 'flex';
-    }
+document.getElementById('searchInput').addEventListener('input', filterProducts);
+document.getElementById('searchInputDesktop').addEventListener('input', filterProducts);
 
-    function hideSpinner() {
-        document.getElementById('spinner').style.display = 'none';
-    }
+// Prevent form submission when Enter is pressed
+document.getElementById('searchForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevents page reload
+    filterProducts(); // Call your filter function
+});
+
+function showSpinner() {
+    document.getElementById('spinner').style.display = 'flex';
+}
+
+function hideSpinner() {
+    document.getElementById('spinner').style.display = 'none';
+}
+
+
 const cards = document.querySelectorAll('.offer-card');
 const dotsContainer = document.querySelector('.dots-container');
 let currentIndex = 0;
