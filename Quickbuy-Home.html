@@ -176,6 +176,14 @@
     .mobile-nav {
         display: none;
     }
+    .delivery-info {
+    margin-bottom: 10px;
+}
+
+#deliveryText {
+    font-size: 14px;
+}
+
 }
 
 .profile-img {
@@ -234,8 +242,6 @@ a:hover {
 .btn:hover {
     background-color: darkgreen; /* Darker green on hover */
 }
-
-
 .spinner-container {
     position: fixed; /* Fixed positioning */
     top: 0; /* Align to the top */
@@ -270,10 +276,28 @@ a:hover {
     33% { clip-path: inset(0 0 0 -100px); }
     50% { clip-path: inset(0 0 0 0); }
     83% { clip-path: inset(0 -100px 0 0); }
-}
-.category-link {
+}.category-link {
     text-decoration: none; /* Remove underline */
     color: inherit; /* Use inherited color for modern look */
+    display: block; /* Make the link block level to cover the entire area */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions for transform and shadow */
+}
+
+.category {
+    position: relative; /* Position relative for absolute children */
+    overflow: hidden; /* Hide overflow */
+    padding: 20px; /* Add some padding */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+    transition: box-shadow 0.3s ease; /* Smooth shadow transition */
+}
+
+.category:hover {
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+    transform: translateY(-5px); /* Lift the card slightly */
+}
+
+.category-link:hover .category-name {
+    color: #372847; /* Change color on hover */
 }
 
 .category-name {
@@ -281,20 +305,17 @@ a:hover {
     font-size: 16px; /* Adjust font size as needed */
     margin-top: 8px; /* Space between image and text */
     transition: color 0.3s ease; /* Smooth color transition */
-    
 }
 
-.category-link:hover .category-name {
-    color: #372847; /* Change color on hover */
-    text-decoration: none; /* Remove underline */
+/* Optional: Change image opacity on hover */
+.category-link img {
+    transition: opacity 0.3s ease; /* Smooth transition for image */
 }
-.category {
-    position: relative; /* Position relative for absolute children */
-    overflow: hidden; /* Hide overflow */
-    padding: 20px; /* Add some padding */
-    text-decoration: none; /* Remove underline */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+
+.category-link:hover img {
+    opacity: 0.8; /* Slightly fade the image on hover */
 }
+
 .offer-slider {
     display: flex;
     overflow: hidden;
@@ -347,6 +368,23 @@ a:hover {
         min-width: 100%; /* Show 1 card at a time */
     }
 }
+#deliveryText {
+    font-size: 16px;           /* Larger font size */
+    font-weight: bold;         /* Make it bold */
+    color: #333;               /* Dark text color */
+    background-color: #f8f9fa; /* Light background for contrast */
+    border-radius: 5px;        /* Rounded corners */
+    padding: 10px;             /* Add some padding */
+    margin: 10px 0;            /* Add margin for spacing */
+    text-align: center;        /* Center the text */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: all 0.3s;      /* Smooth transition for hover effect */
+}
+
+#deliveryText:hover {
+    background-color: #e2e6ea; /* Change background on hover */
+    transform: scale(1.05);     /* Slightly enlarge on hover */
+}
 
 
 </style>
@@ -356,6 +394,9 @@ a:hover {
 <!-- Mobile Navbar -->
 <nav class="navbar mobile-nav">
     <a class="navbar-brand" href="#">QuickBuy</a>
+    <div class="delivery-info">
+        <p id="deliveryText" class="text-muted">Delivery</p>
+    </div>
     <form class="d-flex nav-search">
         <div class="input-group">
             <span class="input-group-text bg-white border-end-0">
@@ -365,6 +406,7 @@ a:hover {
         </div>
     </form>
 </nav>
+
 
 <!-- Desktop Navbar -->
 <nav class="navbar desktop-nav">
@@ -396,40 +438,40 @@ a:hover {
     <div class="loader"></div>
 </div>
 
-<div class="category mt-5">
+<div class="category mt-1">
     <h2 class="text-center mb-4">Categories</h2>
     <div class="row g-1">
-        <div class="col-4 mb-4">
+        <div class="col-4 mb-2 custom-margin"> <!-- Changed mb-4 to mb-2 and added custom class -->
             <a href="#SnacksandSweets" class="category-link" onclick="scrollToCategory('SnacksandSweets'); return false;">
                 <img src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-traditional-indian-mithai-png-image_10212114.png" class="img-fluid" alt="Snacks and Sweets" style="width: 100%; height: 120px; object-fit: contain;" />
                 <div class="text-center category-name">Snacks and Sweets</div>
             </a>
         </div>
-        <div class="col-4 mb-4">
+        <div class="col-4 mb-2 custom-margin">
             <a href="#Bakery" class="category-link" onclick="scrollToCategory('Bakery'); return false;">
                 <img src="https://e7.pngegg.com/pngimages/875/818/png-clipart-bakery-bread-baking-biscuits-bread-baked-goods-food-thumbnail.png" class="img-fluid" alt="Bakery" style="width: 100%; height: 120px; object-fit: contain;" />
                 <div class="text-center category-name">Bakery</div>
             </a>
         </div>
-        <div class="col-4 mb-4">
+        <div class="col-4 mb-2 custom-margin">
             <a href="#PersonalCare" class="category-link" onclick="scrollToCategory('PersonalCare'); return false;">
                 <img src="https://5.imimg.com/data5/SELLER/Default/2023/7/325673516/HR/BW/YU/120174480/fruits-and-vegetables-500x500.jpg" class="img-fluid" alt="Personal Care" style="width: 100%; height: 120px; object-fit: contain;" />
                 <div class="text-center category-name">Personal Care</div>
             </a>
         </div>
-        <div class="col-4 mb-4">
+        <div class="col-4 mb-2 custom-margin">
             <a href="#DairyProducts" class="category-link" onclick="scrollToCategory('DairyProducts'); return false;">
                 <img src="https://png.pngtree.com/png-vector/20220622/ourmid/pngtree-illustration-of-set-different-dairy-milk-products-png-image_5185116.png" class="img-fluid" alt="Dairy Products" style="width: 100%; height: 120px; object-fit: contain;" />
                 <div class="text-center category-name">Dairy Products</div>
             </a>
         </div>
-        <div class="col-4 mb-4">
+        <div class="col-4 mb-2 custom-margin">
             <a href="#Beverages" class="category-link" onclick="scrollToCategory('Beverages'); return false;">
                 <img src="https://thumbs.dreamstime.com/b/cans-beverages-19492376.jpg" class="img-fluid" alt="Beverages" style="width: 100%; height: 120px; object-fit: contain;" />
                 <div class="text-center category-name">Beverages</div>
             </a>
         </div>
-        <div class="col-4 mb-4">
+        <div class="col-4 mb-2 custom-margin">
             <a href="#HouseholdEssentials" class="category-link" onclick="scrollToCategory('HouseholdEssentials'); return false;">
                 <img src="https://png.pngtree.com/thumb_back/fw800/background/20221119/pngtree-household-cleaning-items-for-hygiene-on-a-white-background-photo-image_40448542.jpg" class="img-fluid" alt="Household Essentials" style="width: 100%; height: 120px; object-fit: contain;" />
                 <div class="text-center category-name">Household Essentials</div>
@@ -438,7 +480,8 @@ a:hover {
     </div>
 </div>
 
-<div class="offer-slider">
+
+<div class="offer-slider mt-1">
     <div class="offer-card">
         <img src="https://cdn.grabon.in/gograbon/images/web-images/uploads/1618548899692/groceries-offers.jpg" alt="Offer 1" />
     </div>
@@ -518,7 +561,6 @@ a:hover {
     let allProducts = {};
     let currentUserUid = null;
     let cartItems = {};
-    let currentIndex = 0;
     const defaultProfilePicUrl = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
 
     onAuthStateChanged(auth, (user) => {
@@ -898,9 +940,9 @@ async function addToCart(product, quantity) {
     function hideSpinner() {
         document.getElementById('spinner').style.display = 'none';
     }
-    const cards = document.querySelectorAll('.offer-card');
+const cards = document.querySelectorAll('.offer-card');
 const dotsContainer = document.querySelector('.dots-container');
-
+let currentIndex = 0;
 
 // Create dots for navigation
 cards.forEach((_, index) => {
@@ -935,7 +977,12 @@ setInterval(() => {
     currentIndex = (currentIndex + 1) % cards.length;
     moveToCard(currentIndex);
 }, 2000);
-const placeholders = ["Products", "Search for Snacks", "Beverages", "Bakery", "Personal Care"];
+
+
+</script>
+<script>
+    const placeholders = ["Products", "Search for Snacks", "Beverages", "Bakery", "Personal Care"];
+let currentIndex = 0;
 
 function changePlaceholder() {
     const searchInput = document.getElementById('searchInput');
@@ -957,6 +1004,68 @@ changePlaceholder();
             console.error(`Category section "${category}" not found.`);
         }
     }
+// Function to calculate delivery time based on distance
+function calculateDeliveryTime(userLocation, productLocation) {
+    const distance = getDistanceFromLatLonInKm(userLocation.lat, userLocation.lon, productLocation.lat, productLocation.lon);
+    let deliveryTime = "";
+
+    if (distance <= 10) {
+        deliveryTime = "1 day"; // Within 5 km
+    } else {
+        deliveryTime = "2 days"; // Greater than 5 km
+    }
+
+    return deliveryTime;
+}
+
+// Update delivery time on page load
+document.addEventListener("DOMContentLoaded", function() {
+    const userLocation = getUserLocation();
+    const productLocation = { lat: 40.730610, lon: -73.935242 }; // Example product coordinates
+    const deliveryTime = calculateDeliveryTime(userLocation, productLocation);
+    
+    const deliveryText = document.getElementById("deliveryText");
+    deliveryText.textContent = deliveryTime; // Display the updated delivery time
+});
+
+
+// Example function to get the user's location
+function getUserLocation() {
+    // This is just a placeholder for user coordinates.
+    // In a real application, you would get the coordinates via Geolocation API or other means.
+    return { lat: 40.7128, lon: -74.0060 }; // Example: New York City coordinates
+}
+
+// Function to get distance between two lat/lon points
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of the earth in km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon/2) * Math.sin(dLon/2); 
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    const distance = R * c; // Distance in km
+    return distance;
+}
+
+// Converts degrees to radians
+function deg2rad(deg) {
+    return deg * (Math.PI/180);
+}
+
+// Update delivery time on page load
+document.addEventListener("DOMContentLoaded", function() {
+    const userLocation = getUserLocation();
+    const productLocation = { lat: 40.730610, lon: -73.935242 }; // Example product coordinates
+    const deliveryTime = calculateDeliveryTime(userLocation, productLocation);
+    
+    const deliveryText = document.getElementById("deliveryText");
+    deliveryText.textContent = `Delivery in ${deliveryTime}`;
+});
+
 </script>
+
 </body>
 </html>
