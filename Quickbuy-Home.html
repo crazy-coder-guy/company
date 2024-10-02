@@ -392,6 +392,12 @@ a:hover {
     object-fit: cover; /* Fill the space while maintaining aspect ratio */
     border-radius: 6px; /* Optional: rounded corners */
 }
+.category-video {
+    width: 100%; /* Make the video take the full width of its parent */
+    height: 120px; /* Set a fixed height to match your images */
+    object-fit: cover; /* Ensure the video covers the area without distortion */
+    border-radius: 12px; /* Optional: for rounded corners */
+}
 
 </style>
 </head>
@@ -457,10 +463,14 @@ a:hover {
         </div>
         <div class="col-4 mb-2 custom-margin">
             <a href="#Bakery" class="category-link" onclick="scrollToCategory('Bakery'); return false;">
-                <img src="https://hicaps.com.ph/wp-content/uploads/2022/12/bakery-products.jpg" class="img-fluid category-img" alt="Bakery" />
+                <video class="img-fluid category-video" muted loop playsinline controls>
+                    <source src="src/Iklan Sweet Talk Bakery - Product Commercial Video.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
                 <div class="text-center category-name">Bakery</div>
             </a>
         </div>
+        
         <div class="col-4 mb-2 custom-margin">
             <a href="#PersonalCare" class="category-link" onclick="scrollToCategory('PersonalCare'); return false;">
                 <img src="https://t4.ftcdn.net/jpg/01/68/51/55/360_F_168515550_AYObBKUuUS3k0fleEsBI0yxVGVYOm5nm.jpg" class="img-fluid category-img" alt="Personal Care" />
