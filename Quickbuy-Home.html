@@ -386,6 +386,12 @@ a:hover {
     transform: scale(1.05);     /* Slightly enlarge on hover */
 }
 
+.category-img {
+    height: 120px; /* Fixed height */
+    width: 100%; /* Full width */
+    object-fit: cover; /* Fill the space while maintaining aspect ratio */
+    border-radius: 6px; /* Optional: rounded corners */
+}
 
 </style>
 </head>
@@ -442,44 +448,45 @@ a:hover {
 <div class="category mt-1">
     <h2 class="text-center mb-4">Categories</h2>
     <div class="row g-1">
-        <div class="col-4 mb-2 custom-margin"> <!-- Changed mb-4 to mb-2 and added custom class -->
+        <div class="col-4 mb-2 custom-margin">
             <a href="#SnacksandSweets" class="category-link" onclick="scrollToCategory('SnacksandSweets'); return false;">
-                <img src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-traditional-indian-mithai-png-image_10212114.png" class="img-fluid" alt="Snacks and Sweets" style="width: 100%; height: 120px; object-fit: contain;" />
+                <img src="https://media.istockphoto.com/id/1263686908/photo/mixed-salty-snack-flat-lay-table-scene-on-a-wood-background.jpg?s=612x612&w=0&k=20&c=rCZ-gpvz--NpeNA0cYGCyJj3EK0kFUSkvdsow9u4I3o=" class="img-fluid category-img" alt="Snacks and Sweets" />
                 <div class="text-center category-name">Snacks and Sweets</div>
             </a>
         </div>
         <div class="col-4 mb-2 custom-margin">
             <a href="#Bakery" class="category-link" onclick="scrollToCategory('Bakery'); return false;">
-                <img src="https://e7.pngegg.com/pngimages/875/818/png-clipart-bakery-bread-baking-biscuits-bread-baked-goods-food-thumbnail.png" class="img-fluid" alt="Bakery" style="width: 100%; height: 120px; object-fit: contain;" />
+                <img src="https://hicaps.com.ph/wp-content/uploads/2022/12/bakery-products.jpg" class="img-fluid category-img" alt="Bakery" />
                 <div class="text-center category-name">Bakery</div>
             </a>
         </div>
         <div class="col-4 mb-2 custom-margin">
             <a href="#PersonalCare" class="category-link" onclick="scrollToCategory('PersonalCare'); return false;">
-                <img src="https://5.imimg.com/data5/SELLER/Default/2023/7/325673516/HR/BW/YU/120174480/fruits-and-vegetables-500x500.jpg" class="img-fluid" alt="Personal Care" style="width: 100%; height: 120px; object-fit: contain;" />
+                <img src="https://t4.ftcdn.net/jpg/01/68/51/55/360_F_168515550_AYObBKUuUS3k0fleEsBI0yxVGVYOm5nm.jpg" class="img-fluid category-img" alt="Personal Care" />
                 <div class="text-center category-name">Personal Care</div>
             </a>
         </div>
         <div class="col-4 mb-2 custom-margin">
             <a href="#DairyProducts" class="category-link" onclick="scrollToCategory('DairyProducts'); return false;">
-                <img src="https://png.pngtree.com/png-vector/20220622/ourmid/pngtree-illustration-of-set-different-dairy-milk-products-png-image_5185116.png" class="img-fluid" alt="Dairy Products" style="width: 100%; height: 120px; object-fit: contain;" />
+                <img src="https://d1n5l80rwxz6pi.cloudfront.net/general/blog/importance-of-dairy-products.jpg" class="img-fluid category-img" alt="Dairy Products" />
                 <div class="text-center category-name">Dairy Products</div>
             </a>
         </div>
         <div class="col-4 mb-2 custom-margin">
             <a href="#Beverages" class="category-link" onclick="scrollToCategory('Beverages'); return false;">
-                <img src="https://thumbs.dreamstime.com/b/cans-beverages-19492376.jpg" class="img-fluid" alt="Beverages" style="width: 100%; height: 120px; object-fit: contain;" />
+                <img src="https://media.istockphoto.com/id/1062831310/photo/pour-soft-drink-in-glass-with-ice-splash-on-dark-background.jpg?s=612x612&w=0&k=20&c=XlLTcFQ0FqcTWRa9QniHgpjlkdFrOJGJFGm5jg_TAAw=" class="img-fluid category-img" alt="Beverages" />
                 <div class="text-center category-name">Beverages</div>
             </a>
         </div>
         <div class="col-4 mb-2 custom-margin">
             <a href="#HouseholdEssentials" class="category-link" onclick="scrollToCategory('HouseholdEssentials'); return false;">
-                <img src="https://png.pngtree.com/thumb_back/fw800/background/20221119/pngtree-household-cleaning-items-for-hygiene-on-a-white-background-photo-image_40448542.jpg" class="img-fluid" alt="Household Essentials" style="width: 100%; height: 120px; object-fit: contain;" />
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4Kgb0vfeGzM8xOkMdyrOhHLaxkomKUYz8Yw&s" class="img-fluid category-img" alt="Household Essentials" />
                 <div class="text-center category-name">Household Essentials</div>
             </a>
         </div>
     </div>
 </div>
+
 
 
 <div class="offer-slider mt-1">
