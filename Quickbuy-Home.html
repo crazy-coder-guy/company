@@ -300,7 +300,7 @@ a:hover {
             <span class="input-group-text bg-white border-end-0">
                 <i class="fas fa-search"></i>
             </span>
-            <input class="form-control border-start-0" type="search" placeholder="Search for apples..." aria-label="Search" id="searchInput">
+            <input type="text" id="searchInput" class="form-control" placeholder="Products" />
         </div>
     </form>
 </nav>
@@ -824,6 +824,21 @@ async function addToCart(product, quantity) {
 
 </script>
 <script>
+    const placeholders = ["Products", "Search for Snacks", "Beverages", "Bakery", "Personal Care"];
+let currentIndex = 0;
+
+function changePlaceholder() {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.placeholder = placeholders[currentIndex];
+    currentIndex = (currentIndex + 1) % placeholders.length; // Cycle through the array
+}
+
+// Change the placeholder every 2 seconds (2000 ms)
+setInterval(changePlaceholder, 2000);
+
+// Set the initial placeholder
+changePlaceholder();
+
     function scrollToCategory(category) {
         const categoryElement = document.getElementById(category);
         if (categoryElement) {
