@@ -281,19 +281,71 @@ a:hover {
     font-size: 16px; /* Adjust font size as needed */
     margin-top: 8px; /* Space between image and text */
     transition: color 0.3s ease; /* Smooth color transition */
+    
 }
 
 .category-link:hover .category-name {
-    color: #007bff; /* Change color on hover */
+    color: #372847; /* Change color on hover */
+    text-decoration: none; /* Remove underline */
 }
 .category {
     position: relative; /* Position relative for absolute children */
     overflow: hidden; /* Hide overflow */
     padding: 20px; /* Add some padding */
-    border-radius: 12px; /* Round corners */
-    background: rgba(255, 101, 101, 0.332); /* Light background with transparency */
-    backdrop-filter: blur(10px); /* Glass effect */
+    text-decoration: none; /* Remove underline */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+}
+.offer-slider {
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+.offer-card {
+    min-width: 100%; /* Full width in mobile view */
+    transition: transform 0.5s ease;
+    text-align: center;
+}
+
+.offer-card img {
+    width: 100%;
+    height: 300px; /* Adjust as needed for height */
+    object-fit: contain;
+}
+
+.dots-container {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+}
+
+.dot {
+    height: 10px;
+    width: 10px;
+    margin: 0 5px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.active {
+    background-color: #717171;
+}
+
+/* Responsive styles */
+@media (min-width: 768px) {
+    .offer-card {
+        min-width: 50%; /* Show 2 cards at a time */
+    }
+}
+
+@media (max-width: 768px) {
+    .offer-card {
+        min-width: 100%; /* Show 1 card at a time */
+    }
 }
 
 
@@ -386,6 +438,21 @@ a:hover {
     </div>
 </div>
 
+<div class="offer-slider">
+    <div class="offer-card">
+        <img src="https://cdn.grabon.in/gograbon/images/web-images/uploads/1618548899692/groceries-offers.jpg" alt="Offer 1" />
+    </div>
+    <div class="offer-card">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyNOiIVNNjMQTjIsSdkP3pLj8ci1t-TDJFFg&s" alt="Offer 2" />
+    </div>
+    <div class="offer-card">
+        <img src="https://assets.indiadesire.com/images/jiomart%20grocery%20shopping.jpg" alt="Offer 3" />
+    </div>
+    <div class="offer-card">
+        <img src="https://cdn.grabon.in/gograbon/images/merchant/1572609154076.png" alt="Offer 4" />
+    </div>
+    <div class="dots-container"></div>
+</div>
 
 <div class="container mt-5">
     <h2 class="text-center mb-4"></h2>
@@ -451,6 +518,7 @@ a:hover {
     let allProducts = {};
     let currentUserUid = null;
     let cartItems = {};
+    let currentIndex = 0;
     const defaultProfilePicUrl = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
 
     onAuthStateChanged(auth, (user) => {
@@ -830,12 +898,44 @@ async function addToCart(product, quantity) {
     function hideSpinner() {
         document.getElementById('spinner').style.display = 'none';
     }
+    const cards = document.querySelectorAll('.offer-card');
+const dotsContainer = document.querySelector('.dots-container');
 
 
-</script>
-<script>
-    const placeholders = ["Products", "Search for Snacks", "Beverages", "Bakery", "Personal Care"];
-let currentIndex = 0;
+// Create dots for navigation
+cards.forEach((_, index) => {
+    const dot = document.createElement('div');
+    dot.classList.add('dot');
+    dot.addEventListener('click', () => {
+        moveToCard(index);
+    });
+    dotsContainer.appendChild(dot);
+});
+
+// Set the first dot as active
+dotsContainer.children[currentIndex].classList.add('active');
+
+function moveToCard(index) {
+    currentIndex = index;
+    const offset = -currentIndex * 100;
+    cards.forEach((card, i) => {
+        card.style.transform = `translateX(${offset}%)`;
+    });
+    updateDots();
+}
+
+// Update the active dot
+function updateDots() {
+    Array.from(dotsContainer.children).forEach(dot => dot.classList.remove('active'));
+    dotsContainer.children[currentIndex].classList.add('active');
+}
+
+// Auto-slide every 2 seconds
+setInterval(() => {
+    currentIndex = (currentIndex + 1) % cards.length;
+    moveToCard(currentIndex);
+}, 2000);
+const placeholders = ["Products", "Search for Snacks", "Beverages", "Bakery", "Personal Care"];
 
 function changePlaceholder() {
     const searchInput = document.getElementById('searchInput');
@@ -858,6 +958,5 @@ changePlaceholder();
         }
     }
 </script>
-
 </body>
 </html>
