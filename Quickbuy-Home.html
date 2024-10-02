@@ -286,6 +286,15 @@ a:hover {
 .category-link:hover .category-name {
     color: #007bff; /* Change color on hover */
 }
+.category {
+    position: relative; /* Position relative for absolute children */
+    overflow: hidden; /* Hide overflow */
+    padding: 20px; /* Add some padding */
+    border-radius: 12px; /* Round corners */
+    background: rgba(255, 101, 101, 0.332); /* Light background with transparency */
+    backdrop-filter: blur(10px); /* Glass effect */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+}
 
 
 </style>
@@ -335,7 +344,7 @@ a:hover {
     <div class="loader"></div>
 </div>
 
-<div class="container mt-5">
+<div class="category mt-5">
     <h2 class="text-center mb-4">Categories</h2>
     <div class="row g-1">
         <div class="col-4 mb-4">
@@ -376,6 +385,7 @@ a:hover {
         </div>
     </div>
 </div>
+
 
 <div class="container mt-5">
     <h2 class="text-center mb-4"></h2>
