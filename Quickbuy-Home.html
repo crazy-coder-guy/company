@@ -813,7 +813,8 @@ a:hover {
             const finalPrice = parseFloat(product.finalPrice);
             const discountAmount = originalPrice - finalPrice;
 
-            const discountPercentage = Math.floor((discountAmount / originalPrice) * 100);
+            const discountPercentage = Math.floor((originalPrice - finalPrice) );
+
 
             const discountElement = document.createElement('span');
             discountElement.className = 'discount-amount text-success';
