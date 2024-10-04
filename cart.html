@@ -306,30 +306,44 @@
     const auth = getAuth(app);
     let currentUserId = null;
 
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUserId = user.uid;
-            loadCartFromLocalStorage();
-            fetchCart();
+    onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        currentUserId = user.uid;
+        loadCartFromLocalStorage();
+        fetchCart();
 
-            const userProfilePic = user.photoURL || 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png';
+        // Default Gmail profile icon URL
+        const gmailProfilePic = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png'; 
 
-            const profileIconDesktop = document.getElementById('profileImage');
-            const profileIconMobile = document.querySelector('#profileLink img');
+        // Fetch user data from Firebase
+        const userSnapshot = await get(ref(database, `users/${currentUserId}`));
+        let userProfilePic;
 
-            if (profileIconDesktop) {
-                profileIconDesktop.src = userProfilePic;
-                profileIconDesktop.alt = 'User Profile Picture';
-            }
-
-            if (profileIconMobile) {
-                profileIconMobile.src = userProfilePic;
-                profileIconMobile.alt = 'User Profile Picture';
-            }
+        if (userSnapshot.exists()) {
+            const userData = userSnapshot.val();
+            // Use the photo from Firebase if it exists
+            userProfilePic = userData.photo || gmailProfilePic; // Fallback to Gmail logo if photo is not available
         } else {
-            alert('You need to log in to view your cart.');
+            // If user data doesn't exist, use Gmail logo
+            userProfilePic = gmailProfilePic;
         }
-    });
+
+        const profileIconDesktop = document.getElementById('profileImage');
+        const profileIconMobile = document.querySelector('#profileLink img');
+
+        if (profileIconDesktop) {
+            profileIconDesktop.src = userProfilePic;
+            profileIconDesktop.alt = 'User Profile Picture';
+        }
+
+        if (profileIconMobile) {
+            profileIconMobile.src = userProfilePic;
+            profileIconMobile.alt = 'User Profile Picture';
+        }
+    } else {
+        alert('You need to log in to view your cart.');
+    }
+});
 
     async function fetchCart() {
         showSpinner();
