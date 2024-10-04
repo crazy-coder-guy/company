@@ -249,8 +249,8 @@
 </div>
 <!-- Bottom Navbar for Mobile View -->
 <nav class="bottom-nav">
-    <a href="Quickbuy-Home.html"><i class="fas fa-home"></i><br>Home</a>
-    <a href="User-Profile.html" id="profileLink"><img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"><br>You</a>
+    <a href="QuickBuy-Home.html"><i class="fas fa-home"></i><br>Home</a>
+    <a href="#" id="profileLink"><img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"><br>You</a>
     <a href="#"><i class="fas fa-ellipsis-h"></i><br>More</a>
     <a href="cart.html"><i class="fas fa-shopping-cart fa-2"></i><br>Cart</a>
 </nav>
@@ -286,7 +286,8 @@
         </div>
     </div>
 </div>
-<<script type="module">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
     import { getDatabase, ref, get, remove, set, update } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-database.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js";
@@ -366,16 +367,9 @@
     function renderCart(cart) {
         const cartItemsContainer = document.getElementById('cartItems');
         const totalAmountElement = document.getElementById('totalAmount');
-        const totalMRPElement = document.getElementById('totalMRP');
-        const totalDiscountElement = document.getElementById('totalDiscount');
-        const totalSavingsElement = document.getElementById('totalSavings');
-        const deliveryChargeElement = document.getElementById('deliveryCharge');
-
         cartItemsContainer.innerHTML = '';
 
         let totalAmount = 0;
-        let totalMRP = 0;
-        let totalDiscount = 0;
 
         Object.entries(cart).forEach(([key, item]) => {
             const col = document.createElement('div');
@@ -427,26 +421,10 @@
             col.appendChild(row);
             cartItemsContainer.appendChild(col);
 
-            const itemQuantity = parseInt(item.quantity);
-            const itemFinalPrice = parseFloat(item.finalPrice);
-            const itemOriginalPrice = parseFloat(item.originalPrice);
-
-            totalAmount += itemFinalPrice * itemQuantity;
-            totalMRP += itemOriginalPrice * itemQuantity;
-            totalDiscount += (itemOriginalPrice - itemFinalPrice) * itemQuantity;
+            totalAmount += item.finalPrice * item.quantity;
         });
 
-        let deliveryCharge = 0;
-        if (totalAmount < 500) {
-            deliveryCharge = 50;
-        }
-        
-        totalAmount += deliveryCharge;
         totalAmountElement.innerHTML = `<span class="amount-value">₹${totalAmount.toFixed(2)}</span>`;
-        totalMRPElement.innerHTML = `₹${totalMRP.toFixed(2)}`;
-        totalDiscountElement.innerHTML = `<span class="amount-value">₹${totalDiscount.toFixed(2)}</span>`;
-        totalSavingsElement.innerHTML = `₹${totalDiscount.toFixed(2)}`;
-        deliveryChargeElement.innerHTML = `₹${deliveryCharge.toFixed(2)}`;
     }
 
     async function removeCartItem(productId) {
@@ -468,47 +446,19 @@
     }
 
     async function createOrder(cart) {
-        const orderId = `order_${currentUserId}_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+        const uid = auth.currentUser.uid;
+        const orderId = `order_${uid}_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
         const orderData = {
             orderId: orderId,
-            userId: currentUserId,
+            userId: uid,
             items: cart,
             totalAmount: calculateTotalAmount(cart),
             orderDate: new Date().toISOString()
         };
 
-        const ordersRef = ref(database, `orders/${currentUserId}/${orderId}`);
+        const ordersRef = ref(database, `orders/${uid}/${orderId}`);
         await set(ordersRef, orderData);
         console.log('Order created:', orderData);
-        
-        const userOrdersRef = ref(database, `userOrders/${currentUserId}/${orderId}`);
-        await set(userOrdersRef, orderData);
-        console.log('Order added to user account:', orderData);
-        
-        await updateStock(cart);
-    }
-
-    async function updateStock(cart) {
-        const updates = {};
-        for (const [productId, item] of Object.entries(cart)) {
-            const currentStockRef = ref(database, `products/${productId}/stockAvailable`);
-            const stockSnapshot = await get(currentStockRef);
-            if (stockSnapshot.exists()) {
-                const currentStock = parseInt(stockSnapshot.val());
-                const newStock = currentStock - parseInt(item.quantity);
-                if (newStock >= 0) {
-                    updates[`products/${productId}/stockAvailable`] = newStock;
-                } else {
-                    console.error(`Not enough stock for product ID: ${productId}`);
-                }
-            } else {
-                console.error(`Product ID: ${productId} does not exist.`);
-            }
-        }
-        if (Object.keys(updates).length > 0) {
-            await update(ref(database), updates);
-            console.log('Stock updated successfully:', updates);
-        }
     }
 
     function calculateTotalAmount(cart) {
@@ -524,9 +474,32 @@
         const snapshot = await get(cartRef);
         if (snapshot.exists()) {
             const cart = snapshot.val();
-            await createOrder(cart);
-            await removeAllCartItems();
-            alert('Payment successful! Your cart has been cleared.');
+            
+            // Prepare Razorpay payment options
+            const options = {
+                key: "rzp_test_XxEv4eXXqaPM4o", // Your Razorpay test key
+                amount: (calculateTotalAmount(cart) * 100).toFixed(0), // Convert to paise
+                currency: "INR",
+                name: "QuickBuy",
+                description: "Your Order Description",
+                handler: async function(response) {
+                    // Create order after successful payment
+                    await createOrder(cart);
+                    await removeAllCartItems();
+                    alert('Payment successful! Your cart has been cleared.');
+                },
+                prefill: {
+                    name: "Customer Name",
+                    email: "customer@example.com",
+                    contact: "9999999999"
+                },
+                theme: {
+                    color: "#F37254"
+                }
+            };
+
+            const razorpay = new Razorpay(options);
+            razorpay.open();
         } else {
             alert('Your cart is empty.');
         }
@@ -552,7 +525,5 @@
         document.getElementById('spinner').style.display = 'none';
     }
 </script>
-
-
 </body>
 </html>
