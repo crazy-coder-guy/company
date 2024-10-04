@@ -1057,32 +1057,50 @@ async function getAllUsersData() {
 
 // Update delivery time on page load
 document.addEventListener("DOMContentLoaded", async function() {
-    const usersData = await getAllUsersData();
-    const deliveryText = document.getElementById("deliveryText");
+    try {
+        const usersData = await getAllUsersData();
+        const deliveryText = document.getElementById("deliveryText");
 
-    if (usersData) {
-        // Loop through each user to calculate delivery time
-        for (const userId in usersData) {
-            const user = usersData[userId];
+        if (usersData && Object.keys(usersData).length > 0) {
+            // Clear previous delivery text
+            deliveryText.textContent = "Delivery";
 
-            // Ensure user has location data
-            if (user.location && user.location.latitude && user.location.longitude) {
-                const userLocation = {
-                    latitude: user.location.latitude,
-                    longitude: user.location.longitude
-                };
+            // Loop through each user to calculate delivery time
+            for (const userId in usersData) {
+                const user = usersData[userId];
 
-                // Calculate distance using a predefined delivery point (this could be a user location if needed)
-                const deliveryPoint = { latitude: userLocation.latitude, longitude: userLocation.longitude }; // Example: using user's location as the delivery point
-                const distance = getDistanceFromLatLonInKm(userLocation.latitude, userLocation.longitude, deliveryPoint.latitude, deliveryPoint.longitude);
-                
-                // Set delivery time based on distance
-                const deliveryTime = distance <= 10 ? "1 day" : "2 days";
-                deliveryText.textContent += ` in ${deliveryTime}`;
+                // Ensure user has location data
+                if (user.location && user.location.latitude && user.location.longitude) {
+                    const userLocation = {
+                        latitude: user.location.latitude,
+                        longitude: user.location.longitude
+                    };
+
+                    // Calculate distance using a predefined delivery point (this could be a user location if needed)
+                    const deliveryPoint = { 
+                        latitude: userLocation.latitude, 
+                        longitude: userLocation.longitude 
+                    }; // Example: using user's location as the delivery point
+                    
+                    const distance = getDistanceFromLatLonInKm(
+                        userLocation.latitude, 
+                        userLocation.longitude, 
+                        deliveryPoint.latitude, 
+                        deliveryPoint.longitude
+                    );
+
+                    // Set delivery time based on distance
+                    const deliveryTime = distance <= 10 ? "1 day" : "2 days";
+                    deliveryText.textContent += ` in ${deliveryTime}`;
+                }
             }
+        } else {
+            deliveryText.textContent = "No user data available.";
         }
-    } else {
-        deliveryText.textContent = "No user data available.";
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+        const deliveryText = document.getElementById("deliveryText");
+        deliveryText.textContent = "Error fetching delivery info.";
     }
 });
 
