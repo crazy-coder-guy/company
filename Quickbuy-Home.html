@@ -598,8 +598,14 @@ a:hover {
             const userData = userSnapshot.val();
             const userProfilePicUrl = user.photoURL || userData.photo || defaultProfilePicUrl;
 
+            // Update the profile image
             document.getElementById('profileImage').src = userProfilePicUrl;
             document.getElementById('profileLink').innerHTML = `<img src="${userProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
+
+            // Update local storage if the Firebase photo differs from the user's photo
+            if (userData.photo && userData.photo !== user.photoURL) {
+                localStorage.setItem('userProfilePic', userData.photo);
+            }
         } else {
             // Fallback if no user data found
             document.getElementById('profileImage').src = defaultProfilePicUrl;
