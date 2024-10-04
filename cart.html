@@ -265,19 +265,19 @@
             <div class="price-details">
                 <h5 class="text-center">Price Details</h5>
                 <div class="mb-2">
-                    <strong>Total MRP:</strong> ₹<span id="totalMRP">0.00</span>
+                    <strong>Total MRP:</strong> <span id="totalMRP">0.00</span>
                 </div>
                 <div class="mb-2">
-                    <strong>Total Discount:</strong> ₹<span id="totalDiscount" class="amount-value">0.00</span>
+                    <strong>Total Discount:</strong> <span id="totalDiscount" class="amount-value">0.00</span>
                 </div>
                 <div class="mb-3">
-                    <strong>Delivery Charge:</strong> ₹<span id="deliveryCharge">0.00</span>
+                    <strong>Delivery Charge:</strong> <span id="deliveryCharge">0.00</span>
                 </div>
                 <div class="mb-3">
-                    <strong>Total Amount:</strong> ₹<span id="totalAmount" class="amount-value">0.00</span>
+                    <strong>Total Amount:</strong> <span id="totalAmount" class="amount-value">0.00</span>
                 </div>
                 <div class="mb-3">
-                    <strong>You Save:</strong> ₹<span id="totalSavings">0.00</span>
+                    <strong>You Save:</strong> <span id="totalSavings">0.00</span>
                 </div>
                 <div class="text-center mb-5"> <!-- Added mb-5 for bottom margin -->
                     <button id="payButton" class="btn btn-success btn-lg pay-button">Pay</button> <!-- Added btn-lg for larger button -->
@@ -367,9 +367,16 @@
     function renderCart(cart) {
         const cartItemsContainer = document.getElementById('cartItems');
         const totalAmountElement = document.getElementById('totalAmount');
+        const totalMRPElement = document.getElementById('totalMRP');
+        const totalDiscountElement = document.getElementById('totalDiscount');
+        const totalSavingsElement = document.getElementById('totalSavings');
+        const deliveryChargeElement = document.getElementById('deliveryCharge');
+
         cartItemsContainer.innerHTML = '';
 
         let totalAmount = 0;
+        let totalMRP = 0;
+        let totalDiscount = 0;
 
         Object.entries(cart).forEach(([key, item]) => {
             const col = document.createElement('div');
@@ -395,7 +402,7 @@
 
             const qty = document.createElement('p');
             qty.className = 'mb-0';
-            qty.textContent = `Qty: ${item.quantity} ${item.qtyUnit}`;
+            qty.textContent = `Qty: ${item.quantity} ${item.qtyUnit}`; // Display quantity and unit
             nameQtyCol.appendChild(qty);
             row.appendChild(nameQtyCol);
 
@@ -421,11 +428,30 @@
             col.appendChild(row);
             cartItemsContainer.appendChild(col);
 
-            totalAmount += item.finalPrice * item.quantity;
+            const itemQuantity = parseInt(item.quantity);
+            const itemFinalPrice = parseFloat(item.finalPrice);
+            const itemOriginalPrice = parseFloat(item.originalPrice);
+
+            totalAmount += itemFinalPrice * itemQuantity;
+            totalMRP += itemOriginalPrice * itemQuantity;
+            totalDiscount += (itemOriginalPrice - itemFinalPrice) * itemQuantity;
         });
 
+        // Calculate delivery charge
+        let deliveryCharge = 0;
+        if (totalAmount < 500) {
+            deliveryCharge = 50;
+        }
+        
+        // Update total amounts in the UI
+        totalAmount += deliveryCharge; // Add delivery charge to total amount
         totalAmountElement.innerHTML = `<span class="amount-value">₹${totalAmount.toFixed(2)}</span>`;
+        totalMRPElement.innerHTML = `₹${totalMRP.toFixed(2)}`;
+        totalDiscountElement.innerHTML = `<span class="amount-value">₹${totalDiscount.toFixed(2)}</span>`;
+        totalSavingsElement.innerHTML = `₹${totalDiscount.toFixed(2)}`;
+        deliveryChargeElement.innerHTML = `₹${deliveryCharge.toFixed(2)}`;
     }
+
 
     async function removeCartItem(productId) {
         const cartRef = ref(database, `carts/${currentUserId}`);
