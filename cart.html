@@ -446,64 +446,84 @@
     }
 
     async function createOrder(cart) {
-        const uid = auth.currentUser.uid;
-        const orderId = `order_${uid}_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-        const orderData = {
-            orderId: orderId,
-            userId: uid,
-            items: cart,
-            totalAmount: calculateTotalAmount(cart),
-            orderDate: new Date().toISOString()
+    const uid = auth.currentUser.uid;
+    const orderId = `order_${uid}_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+    const orderData = {
+        orderId: orderId,
+        userId: uid,
+        items: cart,
+        totalAmount: calculateTotalAmount(cart),
+        orderDate: new Date().toISOString()
+    };
+
+    const ordersRef = ref(database, `orders/${uid}/${orderId}`);
+    await set(ordersRef, orderData);
+    console.log('Order created:', orderData);
+}
+
+function calculateTotalAmount(cart) {
+    let total = 0;
+    Object.values(cart).forEach(item => {
+        total += item.finalPrice * item.quantity;
+    });
+    return total.toFixed(2);
+}
+
+document.getElementById('payButton').addEventListener('click', async () => {
+    const uid = auth.currentUser.uid;
+    const userRef = ref(database, `users/${uid}`);
+    const userSnapshot = await get(userRef);
+
+    // Check if user data exists
+    if (!userSnapshot.exists()) {
+        alert('User data not found. Please log in again.');
+        return;
+    }
+
+    const userData = userSnapshot.val();
+    console.log('User data:', userData); // Debugging line
+
+    // Check if user details are complete
+    if (!userData.fullName || !userData.address || !userData.mobile) {
+        alert('Please update your profile with your name, address, and mobile number.');
+        window.location.href = 'User-Profile.html'; // Redirect to profile page
+        return;
+    }
+
+    const cartRef = ref(database, `carts/${uid}`);
+    const snapshot = await get(cartRef);
+    if (snapshot.exists()) {
+        const cart = snapshot.val();
+        
+        // Prepare Razorpay payment options
+        const options = {
+            key: "rzp_test_XxEv4eXXqaPM4o", // Your Razorpay test key
+            amount: (calculateTotalAmount(cart) * 100).toFixed(0), // Convert to paise
+            currency: "INR",
+            name: "QuickBuy",
+            description: "Your Order Description",
+            handler: async function(response) {
+                // Create order after successful payment
+                await createOrder(cart);
+                await removeAllCartItems();
+                alert('Payment successful! Your cart has been cleared.');
+            },
+            prefill: {
+                name: userData.fullName || "Customer Name",
+                email: userData.email || "customer@example.com",
+                contact: userData.mobile || "9999999999"
+            },
+            theme: {
+                color: "#F37254"
+            }
         };
 
-        const ordersRef = ref(database, `orders/${uid}/${orderId}`);
-        await set(ordersRef, orderData);
-        console.log('Order created:', orderData);
+        const razorpay = new Razorpay(options);
+        razorpay.open();
+    } else {
+        alert('Your cart is empty.');
     }
-
-    function calculateTotalAmount(cart) {
-        let total = 0;
-        Object.values(cart).forEach(item => {
-            total += item.finalPrice * item.quantity;
-        });
-        return total.toFixed(2);
-    }
-
-    document.getElementById('payButton').addEventListener('click', async () => {
-        const cartRef = ref(database, `carts/${currentUserId}`);
-        const snapshot = await get(cartRef);
-        if (snapshot.exists()) {
-            const cart = snapshot.val();
-            
-            // Prepare Razorpay payment options
-            const options = {
-                key: "rzp_test_XxEv4eXXqaPM4o", // Your Razorpay test key
-                amount: (calculateTotalAmount(cart) * 100).toFixed(0), // Convert to paise
-                currency: "INR",
-                name: "QuickBuy",
-                description: "Your Order Description",
-                handler: async function(response) {
-                    // Create order after successful payment
-                    await createOrder(cart);
-                    await removeAllCartItems();
-                    alert('Payment successful! Your cart has been cleared.');
-                },
-                prefill: {
-                    name: "Customer Name",
-                    email: "customer@example.com",
-                    contact: "9999999999"
-                },
-                theme: {
-                    color: "#F37254"
-                }
-            };
-
-            const razorpay = new Razorpay(options);
-            razorpay.open();
-        } else {
-            alert('Your cart is empty.');
-        }
-    });
+});
 
     async function removeAllCartItems() {
         const cartRef = ref(database, `carts/${currentUserId}`);
