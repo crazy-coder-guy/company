@@ -563,44 +563,71 @@ a:hover {
     const defaultProfilePicUrl = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
 
     onAuthStateChanged(auth, async (user) => {
+    showSpinner();
     if (user) {
-        currentUserId = user.uid;
-        loadCartFromLocalStorage();
-        fetchCart();
-
-        // Default Gmail profile icon URL
-        const gmailProfilePic = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png'; 
-
+        currentUserUid = user.uid;
+        
         // Fetch user data from Firebase
-        const userSnapshot = await get(ref(database, `users/${currentUserId}`));
-        let userProfilePic;
-
+        const userSnapshot = await get(ref(database, `users/${currentUserUid}`));
+        
         if (userSnapshot.exists()) {
             const userData = userSnapshot.val();
-            // Use the photo from Firebase if it exists
-            userProfilePic = userData.photo || gmailProfilePic; // Fallback to Gmail logo if photo is not available
+            // Use user photo from Firebase, if it doesn't exist, fall back to Gmail profile
+            const userProfilePicUrl = userData.photo || user.photoURL || 'path/to/gmail_profile_logo.png'; // Replace with actual path to Gmail logo
+
+            // Update the profile image
+            document.getElementById('profileImage').src = userProfilePicUrl;
+            document.getElementById('profileLink').innerHTML = `<img src="${userProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
+
+            // Update local storage if the Firebase photo differs from the user's photo
+            if (userData.photo && userData.photo !== user.photoURL) {
+                localStorage.setItem('userProfilePic', userData.photo);
+            }
         } else {
-            // If user data doesn't exist, use Gmail logo
-            userProfilePic = gmailProfilePic;
+            // Fallback if no user data found
+            const defaultProfilePicUrl = 'path/to/gmail_profile_logo.png'; // Replace with actual path to Gmail logo
+            document.getElementById('profileImage').src = defaultProfilePicUrl;
+            document.getElementById('profileLink').innerHTML = `<img src="${defaultProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
         }
 
-        const profileIconDesktop = document.getElementById('profileImage');
-        const profileIconMobile = document.querySelector('#profileLink img');
-
-        if (profileIconDesktop) {
-            profileIconDesktop.src = userProfilePic;
-            profileIconDesktop.alt = 'User Profile Picture';
-        }
-
-        if (profileIconMobile) {
-            profileIconMobile.src = userProfilePic;
-            profileIconMobile.alt = 'User Profile Picture';
+        await fetchCartItems();
+        hideSpinner();
+        
+        const storedCity = localStorage.getItem('userCity');
+        if (storedCity) {
+            fetchProductsForCity(storedCity);
+        } else {
+            showSpinner();
+            getUserLocation().then(location => {
+                hideSpinner();
+                const { latitude, longitude } = location;
+                getCityFromCoordinates(latitude, longitude).then(city => {
+                    localStorage.setItem('userCity', city);
+                    set(ref(database, `users/${currentUserUid}/location`), { city, latitude, longitude });
+                    fetchProductsForLocation(latitude, longitude);
+                });
+            }).catch(error => {
+                hideSpinner();
+                console.error(error);
+            });
         }
     } else {
-        alert('You need to log in to view your cart.');
+        // User is not logged in
+        const userSnapshot = await get(ref(database, `users/${currentUserUid}`));
+        
+        if (userSnapshot.exists()) {
+            const userData = userSnapshot.val();
+            const userProfilePicUrl = userData.photo || 'path/to/gmail_profile_logo.png'; // Replace with actual path to Gmail logo
+
+            document.getElementById('profileImage').src = userProfilePicUrl;
+            document.getElementById('profileLink').innerHTML = `<img src="${userProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
+        } else {
+            const defaultProfilePicUrl = 'path/to/gmail_profile_logo.png'; // Replace with actual path to Gmail logo
+            document.getElementById('profileImage').src = defaultProfilePicUrl;
+            document.getElementById('profileLink').innerHTML = `<img src="${defaultProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
+        }
     }
 });
-
 
     window.addEventListener('beforeunload', () => {
         localStorage.removeItem('userCity'); // Remove user location from local storage
