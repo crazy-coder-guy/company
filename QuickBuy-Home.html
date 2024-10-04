@@ -180,9 +180,6 @@
     .delivery-info {
     margin-bottom: 10px;
 }
-#deliveryText {
-    font-size: 14px;
-}
 
 }
 
@@ -368,23 +365,6 @@ a:hover {
         min-width: 100%; /* Show 1 card at a time */
     }
 }
-#deliveryText {
-    font-size: 16px;           /* Larger font size */
-    font-weight: bold;         /* Make it bold */
-    color: #333;               /* Dark text color */
-    background-color: #f8f9fa; /* Light background for contrast */
-    border-radius: 5px;        /* Rounded corners */
-    padding: 10px;             /* Add some padding */
-    margin: 10px 0;            /* Add margin for spacing */
-    text-align: center;        /* Center the text */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    transition: all 0.3s;      /* Smooth transition for hover effect */
-}
-
-#deliveryText:hover {
-    background-color: #e2e6ea; /* Change background on hover */
-    transform: scale(1.05);     /* Slightly enlarge on hover */
-}
 
 .category-img {
     height: 120px; /* Fixed height */
@@ -406,22 +386,17 @@ a:hover {
 <!-- Mobile Navbar -->
 <nav class="navbar mobile-nav">
     <a class="navbar-brand" href="#">QuickBuy</a>
-    <div class="delivery-info">
-        <p id="deliveryText" class="text-muted">Delivery</p>
+    <div class="nav-search-container">
+        <form id="searchForm" class="d-flex nav-search">
+            <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0 search-icon">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" id="searchInput" class="form-control modern-search" placeholder="Search for products..." />
+            </div>
+        </form>
     </div>
-    <form id="searchForm" class="d-flex nav-search w-100"> <!-- Full width -->
-       <div class="input-group w-100"> <!-- Full width -->
-    <span class="input-group-text bg-transparent border-end-0">
-        <i class="fas fa-search"></i>
-    </span>
-    <input type="text" id="searchInput" class="form-control modern-search" placeholder="Search for products..." />
-</div>
-
-    </form>
 </nav>
-
-
-
 
 <!-- Desktop Navbar -->
 <nav class="navbar desktop-nav">
@@ -588,68 +563,44 @@ a:hover {
     const defaultProfilePicUrl = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
 
     onAuthStateChanged(auth, async (user) => {
-    showSpinner();
     if (user) {
-        currentUserUid = user.uid;
-        
+        currentUserId = user.uid;
+        loadCartFromLocalStorage();
+        fetchCart();
+
+        // Default Gmail profile icon URL
+        const gmailProfilePic = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png'; 
+
         // Fetch user data from Firebase
-        const userSnapshot = await get(ref(database, `users/${currentUserUid}`));
-        
+        const userSnapshot = await get(ref(database, `users/${currentUserId}`));
+        let userProfilePic;
+
         if (userSnapshot.exists()) {
             const userData = userSnapshot.val();
-            const userProfilePicUrl = user.photoURL || userData.photo || defaultProfilePicUrl;
-
-            // Update the profile image
-            document.getElementById('profileImage').src = userProfilePicUrl;
-            document.getElementById('profileLink').innerHTML = `<img src="${userProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
-
-            // Update local storage if the Firebase photo differs from the user's photo
-            if (userData.photo && userData.photo !== user.photoURL) {
-                localStorage.setItem('userProfilePic', userData.photo);
-            }
+            // Use the photo from Firebase if it exists
+            userProfilePic = userData.photo || gmailProfilePic; // Fallback to Gmail logo if photo is not available
         } else {
-            // Fallback if no user data found
-            document.getElementById('profileImage').src = defaultProfilePicUrl;
-            document.getElementById('profileLink').innerHTML = `<img src="${defaultProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
+            // If user data doesn't exist, use Gmail logo
+            userProfilePic = gmailProfilePic;
         }
 
-        await fetchCartItems();
-        hideSpinner();
-        
-        const storedCity = localStorage.getItem('userCity');
-        if (storedCity) {
-            fetchProductsForCity(storedCity);
-        } else {
-            showSpinner();
-            getUserLocation().then(location => {
-                hideSpinner();
-                const { latitude, longitude } = location;
-                getCityFromCoordinates(latitude, longitude).then(city => {
-                    localStorage.setItem('userCity', city);
-                    set(ref(database, `users/${currentUserUid}/location`), { city, latitude, longitude });
-                    fetchProductsForLocation(latitude, longitude);
-                });
-            }).catch(error => {
-                hideSpinner();
-                console.error(error);
-            });
+        const profileIconDesktop = document.getElementById('profileImage');
+        const profileIconMobile = document.querySelector('#profileLink img');
+
+        if (profileIconDesktop) {
+            profileIconDesktop.src = userProfilePic;
+            profileIconDesktop.alt = 'User Profile Picture';
+        }
+
+        if (profileIconMobile) {
+            profileIconMobile.src = userProfilePic;
+            profileIconMobile.alt = 'User Profile Picture';
         }
     } else {
-        // User is not logged in
-        const userSnapshot = await get(ref(database, `users/${currentUserUid}`));
-        
-        if (userSnapshot.exists()) {
-            const userData = userSnapshot.val();
-            const userProfilePicUrl = userData.photo || defaultProfilePicUrl;
-
-            document.getElementById('profileImage').src = userProfilePicUrl;
-            document.getElementById('profileLink').innerHTML = `<img src="${userProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
-        } else {
-            document.getElementById('profileImage').src = defaultProfilePicUrl;
-            document.getElementById('profileLink').innerHTML = `<img src="${defaultProfilePicUrl}" alt="Profile" class="profile-img" style="width: 24px; height: 24px;"> <br> You`;
-        }
+        alert('You need to log in to view your cart.');
     }
 });
+
 
     window.addEventListener('beforeunload', () => {
         localStorage.removeItem('userCity'); // Remove user location from local storage
@@ -1062,55 +1013,6 @@ async function getAllUsersData() {
     return snapshot.exists() ? snapshot.val() : null;
 }
 
-// Update delivery time on page load
-document.addEventListener("DOMContentLoaded", async function() {
-    try {
-        const usersData = await getAllUsersData();
-        const deliveryText = document.getElementById("deliveryText");
-
-        if (usersData && Object.keys(usersData).length > 0) {
-            // Clear previous delivery text
-            deliveryText.textContent = "Delivery";
-
-            // Loop through each user to calculate delivery time
-            for (const userId in usersData) {
-                const user = usersData[userId];
-
-                // Ensure user has location data
-                if (user.location && user.location.latitude && user.location.longitude) {
-                    const userLocation = {
-                        latitude: user.location.latitude,
-                        longitude: user.location.longitude
-                    };
-
-                    // Calculate distance using a predefined delivery point (this could be a user location if needed)
-                    const deliveryPoint = { 
-                        latitude: userLocation.latitude, 
-                        longitude: userLocation.longitude 
-                    }; // Example: using user's location as the delivery point
-                    
-                    const distance = getDistanceFromLatLonInKm(
-                        userLocation.latitude, 
-                        userLocation.longitude, 
-                        deliveryPoint.latitude, 
-                        deliveryPoint.longitude
-                    );
-
-                    // Set delivery time based on distance
-                    const deliveryTime = distance <= 10 ? "1 day" : "2 days";
-                    deliveryText.textContent += ` in ${deliveryTime}`;
-                }
-            }
-        } else {
-            deliveryText.textContent = "No user data available.";
-        }
-    } catch (error) {
-        console.error("Error fetching user data:", error);
-        const deliveryText = document.getElementById("deliveryText");
-        deliveryText.textContent = "Error fetching delivery info.";
-    }
-});
-
 </script>
 <script>
     const placeholders = ["Products", "Search for Snacks", "Beverages", "Bakery", "Personal Care"];
@@ -1142,6 +1044,7 @@ function scrollToCategory(category) {
         console.error(`Category section "${category}" not found.`);
     }
 }
+
 
 </script>
 
